@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
+
+files = []
+tags = []
+for argument in ARGV
+  if argument.match(/^[\+\-]/)
+    tags << argument
+  else
+    path = File.expand_path(argument)
+    if File.directory?(path)
+      files |= Dir.glob(File.join(path, '**', '*.rb'))
+    else
+      files << path
+    end
+  end
+end
+
+def run_in_thread(files, tags)
+  tests = Thread.new {
+    Thread.current[:tags] = tags
+    for file in files
+      load(file)
+    end
+  }
+  tests.join
+  if tests[:reload]
+    run_in_thread(files, tags)
+  elsif tests[:success]
+    exit(0)
+  else
+    exit(1)
+  end
+end
+run_in_thread(files, tags)
