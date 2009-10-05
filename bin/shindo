@@ -16,6 +16,7 @@ for argument in ARGV
   end
 end
 
+success = true
 def run_in_thread(files, tags)
   tests = Thread.new {
     Thread.current[:tags] = tags
@@ -26,10 +27,16 @@ def run_in_thread(files, tags)
   tests.join
   if tests[:reload]
     run_in_thread(files, tags)
-  elsif tests[:success]
+  else
+    success = success && tests[:success]
+  end
+end
+run_in_thread(files, tags)
+
+at_exit {
+  if success
     exit(0)
   else
     exit(1)
   end
-end
-run_in_thread(files, tags)
+}
