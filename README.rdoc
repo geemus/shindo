@@ -1,17 +1,90 @@
 = shindo
 
-Description goes here.
+Simple depth first ruby testing, watch and learn.
 
-== Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but
-   bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+== Writing tests
+
+There are two commands you should know, 'tests' and 'test'. Tests help you group similar calls to test, but their return value is ignored.  The return value of test, on the other hand, determines success or failure.
+
+A successful test should return true. (yay)
+
+  Shindo.tests {
+    test('something really important') { true }
+  }
+
+A failing test should return false or nil. (boo)
+
+  Shindo.tests {
+    test('something (hopefully) less important') { false }
+  }
+
+A pending test shouldn't even have a block (meh)
+
+  Shindo.tests {
+    test('something that hasn't been gotten around to yet')
+  }
+
+Grouping tests
+
+  Shindo.tests {
+    tests('foo/bar') {
+      test('foo') { true }
+      test('bar') { true }
+    }
+  }
+
+You can also have descriptions for Shindo.tests, and write that last one like this
+
+  Shindo.tests('foo/bar') {
+    test('foo') { true }
+    test('bar') { false }
+  }
+
+Nest tests as deeply as you would like.
+
+Then, if you want to get real fancy you can also tag your tests, to help narrow down which ones to run
+
+  Shindo.tests {
+    tests('foo/bar', ['foo', 'bar']) {
+      test('foo') { true }
+      test('bar') { true }
+    }
+  }
+
+Or if you can narrow down even more tightly
+
+  Shindo.tests {
+    tests('foo/bar') {
+      test('foo', ['foo']) { true }
+      test('bar', ['bar']) { true }
+    }
+  }
+
+== Running tests
+
+Run tests with the shindo command, the easiest is to specify a file name:
+
+  shindo some_test_file.rb
+
+You can also give directories and it will run all .rb files inside (recurses through subdirectories)
+
+  shindo some_test_directory
+
+That leaves tags, which use +/-.  So run just tests with the 'foo' tag:
+
+  shindo some_test_directory +foo
+
+Or those without the 'bar' tag:
+
+  shindo some_test_directory -bar
+
+Or combine to run everything with a foo tag, but no bar tag
+
+  shindo some_test_directory +foo -bar
+
+== Command line tools
+
+When tests fail you'll get lots of options to help you debug the problem, just enter '?' at the prompt to see your options.
 
 == Copyright
 
