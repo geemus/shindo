@@ -4,12 +4,13 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
+    gem.add_dependency('annals')
     gem.name = "shindo"
     gem.summary = %Q{ruby testing}
     gem.description = %Q{Simple depth first ruby testing}
     gem.email = "me@geemus.com"
     gem.homepage = "http://github.com/geemus/shindo"
-    gem.authors = ["Wesley Beary"]
+    gem.authors = ["geemus (Wesley Beary)"]
     gem.rubyforge_project = "shindo"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
