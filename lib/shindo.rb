@@ -128,7 +128,7 @@ module Shindo
         print_line('? - display help')
       when /\d/
         index = choice.to_i - 1
-        if backtrace.lines[index]
+        if @annals.lines[index]
           indent {
             print_line("#{@annals.lines[index]}: ")
             indent {
