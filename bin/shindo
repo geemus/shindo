@@ -35,8 +35,8 @@ run_in_thread(files, tags)
 
 at_exit {
   if success
-    exit(0)
+    Kernel.exit(0)
   else
-    exit(1)
+    Kernel.exit(1)
   end
 }
