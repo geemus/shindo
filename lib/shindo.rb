@@ -27,7 +27,7 @@ module Shindo
       tests(header, &block)
       print("\n")
       if @success
-        Thread.current[:success] = false
+        Thread.current[:success] = true
       else
         Thread.current[:success] = false
       end
