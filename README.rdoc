@@ -8,57 +8,57 @@ There are two commands you should know, 'tests' and 'test'. Tests help you group
 
 A successful test should return true. (yay)
 
-  Shindo.tests {
+  Shindo.tests do
     test('something really important') { true }
-  }
+  end
 
 A failing test should return false or nil. (boo)
 
-  Shindo.tests {
+  Shindo.tests do
     test('something (hopefully) less important') { false }
-  }
+  end
 
 A pending test shouldn't even have a block (meh)
 
-  Shindo.tests {
+  Shindo.tests do
     test('something that hasn't been gotten around to yet')
-  }
+  end
 
 Grouping tests
 
-  Shindo.tests {
-    tests('foo/bar') {
+  Shindo.tests do
+    tests('foo/bar') do
       test('foo') { true }
       test('bar') { true }
-    }
-  }
+    end
+  end
 
 You can also have descriptions for Shindo.tests, and write that last one like this
 
-  Shindo.tests('foo/bar') {
+  Shindo.tests('foo/bar') do
     test('foo') { true }
     test('bar') { false }
-  }
+  end
 
 Nest tests as deeply as you would like.
 
 Then, if you want to get real fancy you can also tag your tests, to help narrow down which ones to run
 
-  Shindo.tests {
-    tests('foo/bar', ['foo', 'bar']) {
+  Shindo.tests do
+    tests('foo/bar', ['foo', 'bar']) do
       test('foo') { true }
       test('bar') { true }
-    }
-  }
+    end
+  end
 
 Or if you can narrow down even more tightly
 
-  Shindo.tests {
-    tests('foo/bar') {
+  Shindo.tests do
+    tests('foo/bar') do
       test('foo', ['foo']) { true }
       test('bar', ['bar']) { true }
-    }
-  }
+    end
+  end
 
 == Running tests
 
