@@ -12,13 +12,17 @@ module Shindo
 
     attr_accessor :backtrace
 
+    attr_accessor :if_tagged, :unless_tagged
+
     def initialize(header, tags = [], &block)
       @afters     = []
       @annals     = Annals.new
       @befores    = []
       @description_stack = []
-      @if_tagged      = Thread.current[:tags].select {|tag| tag.match(/^\+/)}
-      @unless_tagged  = Thread.current[:tags].select {|tag| tag.match(/^\-/)}.map {|tag| tag[1..-1]}
+      self.if_tagged      = Thread.current[:tags].select {|tag| tag.match(/^\+/)}
+      self.unless_tagged  = Thread.current[:tags].
+                              select {|tag| tag.match(/^\-/)}.
+                              map {|tag| tag[1..-1]}
       @indent     = 1
       @success    = true
       @tag_stack  = []
