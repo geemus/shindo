@@ -19,7 +19,9 @@ module Shindo
       @annals     = Annals.new
       @befores    = []
       @description_stack = []
-      self.if_tagged      = Thread.current[:tags].select {|tag| tag.match(/^\+/)}
+      self.if_tagged      = Thread.current[:tags].
+                              select {|tag| tag.match(/^\+/)}.
+                              map {|tag| tag[1..-1]}
       self.unless_tagged  = Thread.current[:tags].
                               select {|tag| tag.match(/^\-/)}.
                               map {|tag| tag[1..-1]}

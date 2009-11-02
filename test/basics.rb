@@ -42,7 +42,7 @@ end
 
 Shindo.tests('tags') do
   tests('positive') do
-    self.if_tagged = ['+pos']
+    self.if_tagged = ['pos']
     test('should run', ['pos']) {true}
     test('should not run') {false}
   end
