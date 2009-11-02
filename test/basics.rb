@@ -38,3 +38,19 @@ Shindo.tests('basics') do
     test('status') { $?.exitstatus == 0 }
   end
 end
+
+
+Shindo.tests('tags') do
+  tests('positive') do
+    self.if_tagged = ['+pos']
+    test('should run', ['pos']) {true}
+    test('should not run') {false}
+  end
+
+  tests('negative') do
+    self.if_tagged = []
+    self.unless_tagged = ['neg']
+    test('should run') {true}
+    test('should not run', ['neg']) {false}
+  end
+end
