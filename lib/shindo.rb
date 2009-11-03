@@ -12,8 +12,6 @@ module Shindo
 
     attr_accessor :backtrace
 
-    attr_accessor :if_tagged, :unless_tagged
-
     def initialize(header, tags = [], &block)
       @afters     = []
       @annals     = Annals.new
