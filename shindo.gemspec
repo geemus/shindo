@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{shindo}
-  s.version = "0.0.2"
+  s.version = "0.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["geemus (Wesley Beary)"]
-  s.date = %q{2009-10-07}
+  s.date = %q{2009-11-02}
   s.default_executable = %q{shindo}
   s.description = %q{Simple depth first ruby testing}
   s.email = %q{me@geemus.com}
@@ -25,7 +25,10 @@ Gem::Specification.new do |s|
      "VERSION",
      "bin/shindo",
      "lib/shindo.rb",
-     "shindo.gemspec"
+     "shindo.gemspec",
+     "tests/basic_tests.rb",
+     "tests/tag_tests.rb",
+     "tests/tests_helper.rb"
   ]
   s.homepage = %q{http://github.com/geemus/shindo}
   s.rdoc_options = ["--charset=UTF-8"]
