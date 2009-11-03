@@ -9,7 +9,7 @@ for argument in ARGV
   else
     path = File.expand_path(argument)
     if File.directory?(path)
-      files |= Dir.glob(File.join(path, '**', '*.rb'))
+      files |= Dir.glob(File.join(path, '**', '*_tests.rb'))
     else
       files << path
     end

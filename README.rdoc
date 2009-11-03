@@ -64,9 +64,9 @@ Or if you can narrow down even more tightly
 
 Run tests with the shindo command, the easiest is to specify a file name:
 
-  shindo some_test_file.rb
+  shindo something_tests.rb
 
-You can also give directories and it will run all .rb files inside (recurses through subdirectories)
+You can also give directories and it will run all files ending in _tests.rb (recurses through subdirectories)
 
   shindo some_test_directory
 
