@@ -18,29 +18,25 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'tests'
-  test.pattern = 'tests/**/*_tests.rb'
-  test.verbose = true
-end
+require File.join(File.dirname(__FILE__), 'lib', 'shindo', 'rake')
+Shindo::Rake.new
 
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'tests'
-    test.pattern = 'tests/**/*_tests.rb'
-    test.verbose = true
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
-end
+# begin
+#   require 'rcov/rcovtask'
+#   Rcov::RcovTask.new do |test|
+#     test.libs << 'tests'
+#     test.pattern = 'tests/**/*_tests.rb'
+#     test.verbose = true
+#   end
+# rescue LoadError
+#   task :rcov do
+#     abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
+#   end
+# end
 
-task :test => :check_dependencies
+task :tests => :check_dependencies
 
-task :default => :test
+task :default => :tests
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
