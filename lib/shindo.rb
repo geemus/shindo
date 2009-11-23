@@ -17,14 +17,13 @@ module Shindo
       @annals     = Annals.new
       @befores    = []
       @description_stack = []
-      if Thread.current[:tags]
-        @if_tagged      = Thread.current[:tags].
-                            select {|tag| tag.match(/^\+/)}.
-                            map {|tag| tag[1..-1]}
-        @unless_tagged  = Thread.current[:tags].
-                            select {|tag| tag.match(/^\-/)}.
-                            map {|tag| tag[1..-1]}
-      end
+      Thread.current[:tags] ||= []
+      @if_tagged      = Thread.current[:tags].
+                          select {|tag| tag.match(/^\+/)}.
+                          map {|tag| tag[1..-1]}
+      @unless_tagged  = Thread.current[:tags].
+                          select {|tag| tag.match(/^\-/)}.
+                          map {|tag| tag[1..-1]}
       @indent     = 1
       @success    = true
       @tag_stack  = []
