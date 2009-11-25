@@ -17,7 +17,6 @@ module Shindo
       @afters     = []
       @annals     = Annals.new
       @befores    = []
-      @description_stack = []
       @formatador = Formatador.new
       @success    = true
       @tag_stack  = []
@@ -43,17 +42,13 @@ module Shindo
       @befores[-1].push(block)
     end
 
-    def full_description
-      "#{@description_stack.compact.join(' ')}#{full_tags}"
-    end
-
-    def full_tags
+    def tags
       unless @tag_stack.flatten.empty?
         " [#{@tag_stack.flatten.join(', ')}]"
       end
     end
 
-    def prompt(&block)
+    def prompt(description, &block)
       @formatador.display("#{@formatador.indentation}Action? [c,i,q,r,t,#,?]? ")
       choice = STDIN.gets.strip
       @formatador.display_line("")
@@ -91,10 +86,8 @@ module Shindo
           if @annals.lines.empty?
             @formatador.display_line('no backtrace available')
           else
-            index = 1
-            for line in @annals.lines
+            @annals.lines.each_with_index do |line, index|
               @formatador.display_line("#{' ' * (2 - index.to_s.length)}#{index}  #{line}")
-              index += 1
             end
           end
         end
@@ -123,7 +116,7 @@ module Shindo
                 min.upto(current - 1) do |line|
                   @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
-                yellow_line("#{current}  #{data[current].rstrip}")
+                @formatador.display_line("#{current}  #{data[current].rstrip}", :foreground_yellow)
                 (current + 1).upto(max - 1) do |line|
                   @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
@@ -137,7 +130,7 @@ module Shindo
       else
         @formatador.display_line("#{choice} is not a valid choice, please try again.", :foreground_red)
       end
-      @formatador.display_line("- #{full_description}", :foreground_red)
+      @formatador.display_line("- #{description}", :foreground_red)
       prompt(&block)
     end
 
@@ -157,7 +150,6 @@ module Shindo
     end
 
     def test(description, tags = [], &block)
-      @description_stack.push(description)
       @tag_stack.push([*tags])
 
       # if the test includes +tags and discludes -tags, evaluate it
@@ -186,11 +178,11 @@ module Shindo
           end
           @success = @success && success
           if success
-            @formatador.display_line("+ #{full_description}", :foreground_green)
+            @formatador.display_line("+ #{description}#{tags}", :foreground_green)
           else
-            @formatador.display_line("- #{full_description}", :foreground_red)
+            @formatador.display_line("- #{description}#{tags}", :foreground_red)
             if STDOUT.tty?
-              prompt(&block)
+              prompt(description, &block)
             end
           end
 
@@ -198,14 +190,13 @@ module Shindo
             after.call
           end
         else
-          @formatador.display_line("* #{full_description}", :foreground_yellow)
+          @formatador.display_line("* #{description}", :foreground_yellow)
         end
       else
-        @formatador.display_line("_ #{full_description}")
+        @formatador.display_line("_ #{description}")
       end
 
       @tag_stack.pop
-      @description_stack.pop
     end
 
   end
