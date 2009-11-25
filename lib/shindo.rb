@@ -32,11 +32,7 @@ module Shindo
       @formatador.display_line('')
       tests(header, tags, &block)
       @formatador.display_line('')
-      if @success
-        Thread.current[:success] = true
-      else
-        Thread.current[:success] = false
-      end
+      Thread.current[:success] = @success
     end
 
     def after(&block)
@@ -91,7 +87,7 @@ module Shindo
         Thread.current[:reload] = true
         Thread.exit
       when 't'
-        @formatador.indent {
+        @formatador.indent do
           if @annals.lines.empty?
             @formatador.display_line('no backtrace available')
           else
@@ -101,7 +97,7 @@ module Shindo
               index += 1
             end
           end
-        }
+        end
         @formatador.display_line('')
       when '?'
         @formatador.display_line('c - ignore this error and continue')
@@ -164,7 +160,7 @@ module Shindo
       @description_stack.push(description)
       @tag_stack.push([*tags])
 
-      # if the test includes tags and discludes ^tags, evaluate it
+      # if the test includes +tags and discludes -tags, evaluate it
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
         if block_given?
@@ -177,6 +173,7 @@ module Shindo
             success = instance_eval(&block)
             @annals.stop
           rescue => error
+            @annals.stop
             success = false
             file, line, method = error.backtrace.first.split(':')
             if method
@@ -185,7 +182,6 @@ module Shindo
               method = ''
             end
             method << "! #{error.message} (#{error.class})"
-            @annals.stop
             @annals.unshift(:file => file, :line => line.to_i, :method => method)
           end
           @success = @success && success
