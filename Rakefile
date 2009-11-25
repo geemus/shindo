@@ -4,7 +4,6 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.add_dependency('annals')
     gem.name = "shindo"
     gem.summary = %Q{ruby testing}
     gem.description = %Q{Simple depth first ruby testing}
@@ -12,6 +11,8 @@ begin
     gem.homepage = "http://github.com/geemus/shindo"
     gem.authors = ["geemus (Wesley Beary)"]
     gem.rubyforge_project = "shindo"
+    gem.add_dependency('annals')
+    gem.add_dependency('formatador')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError

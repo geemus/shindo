@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'annals'
+require 'formatador'
 
 module Shindo
 
@@ -17,6 +18,10 @@ module Shindo
       @annals     = Annals.new
       @befores    = []
       @description_stack = []
+      @formatador = Formatador.new
+      @success    = true
+      @tag_stack  = []
+      Thread.current[:reload] = false;
       Thread.current[:tags] ||= []
       @if_tagged      = Thread.current[:tags].
                           select {|tag| tag.match(/^\+/)}.
@@ -24,13 +29,9 @@ module Shindo
       @unless_tagged  = Thread.current[:tags].
                           select {|tag| tag.match(/^\-/)}.
                           map {|tag| tag[1..-1]}
-      @indent     = 1
-      @success    = true
-      @tag_stack  = []
-      Thread.current[:reload] = false
-      print("\n")
+      @formatador.display_line('')
       tests(header, tags, &block)
-      print("\n")
+      @formatador.display_line('')
       if @success
         Thread.current[:success] = true
       else
@@ -56,36 +57,15 @@ module Shindo
       end
     end
 
-    def green_line(content)
-      print_line(content, "\e[32m")
-    end
-
-    def indent(&block)
-      @indent += 1
-      yield
-      @indent -= 1
-    end
-
-    def indentation
-      '  ' * @indent
-    end
-
-    def print_line(content, color = nil)
-      if color && STDOUT.tty?
-        content = "#{color}#{content}\e[0m"
-      end
-      print("#{indentation}#{content}\n")
-    end
-
     def prompt(&block)
-      print("#{indentation}Action? [c,i,q,r,t,#,?]? ")
+      @formatador.display("#{@formatador.indentation}Action? [c,i,q,r,t,#,?]? ")
       choice = STDIN.gets.strip
-      print("\n")
+      @formatador.display_line("")
       case choice
       when 'c'
         return
       when 'i'
-        print_line('Starting interactive session...')
+        @formatador.display_line('Starting interactive session...')
         if @irb.nil?
           require 'irb'
           ARGV.clear # Avoid passing args to IRB
@@ -95,7 +75,7 @@ module Shindo
           IRB.conf[:PROMPT][:TREST] = {}
         end
         for key, value in IRB.conf[:PROMPT][:SIMPLE]
-          IRB.conf[:PROMPT][:TREST][key] = "#{indentation}#{value}"
+          IRB.conf[:PROMPT][:TREST][key] = "#{@formatador.indentation}#{value}"
         end
         @irb.context.prompt_mode = :TREST
         @irb.context.workspace = IRB::WorkSpace.new(block.binding)
@@ -107,37 +87,37 @@ module Shindo
         Thread.current[:success] = false
         Thread.exit
       when 'r'
-        print("Reloading...\n")
+        @formatador.display_line("Reloading...")
         Thread.current[:reload] = true
         Thread.exit
       when 't'
-        indent {
+        @formatador.indent {
           if @annals.lines.empty?
-            print_line('no backtrace available')
+            @formatador.display_line('no backtrace available')
           else
             index = 1
             for line in @annals.lines
-              print_line("#{' ' * (2 - index.to_s.length)}#{index}  #{line}")
+              @formatador.display_line("#{' ' * (2 - index.to_s.length)}#{index}  #{line}")
               index += 1
             end
           end
         }
-        print("\n")
+        @formatador.display_line('')
       when '?'
-        print_line('c - ignore this error and continue')
-        print_line('i - interactive mode')
-        print_line('q - quit Shindo')
-        print_line('r - reload and run the tests again')
-        print_line('t - display backtrace')
-        print_line('# - enter a number of a backtrace line to see its context')
-        print_line('? - display help')
+        @formatador.display_line('c - ignore this error and continue')
+        @formatador.display_line('i - interactive mode')
+        @formatador.display_line('q - quit Shindo')
+        @formatador.display_line('r - reload and run the tests again')
+        @formatador.display_line('t - display backtrace')
+        @formatador.display_line('# - enter a number of a backtrace line to see its context')
+        @formatador.display_line('? - display help')
       when /\d/
         index = choice.to_i - 1
         if @annals.lines[index]
-          indent {
-            print_line("#{@annals.lines[index]}: ")
-            indent {
-              print("\n")
+          @formatador.indent do
+            @formatador.display_line("#{@annals.lines[index]}: ")
+            @formatador.indent do
+              @formatador.display("\n")
               current_line = @annals.buffer[index]
               File.open(current_line[:file], 'r') do |file|
                 data = file.readlines
@@ -145,28 +125,24 @@ module Shindo
                 min     = [0, current - (@annals.max / 2)].max
                 max     = [current + (@annals.max / 2), data.length].min
                 min.upto(current - 1) do |line|
-                  print_line("#{line}  #{data[line].rstrip}")
+                  @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
                 yellow_line("#{current}  #{data[current].rstrip}")
                 (current + 1).upto(max - 1) do |line|
-                  print_line("#{line}  #{data[line].rstrip}")
+                  @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
               end
-              print("\n")
-            }
-          }
+              @formatador.display_line('')
+            end
+          end
         else
-          red_line("#{choice} is not a valid backtrace line, please try again.")
+          @formatador.display_line("#{choice} is not a valid backtrace line, please try again.", :foreground_red)
         end
       else
-        red_line("#{choice} is not a valid choice, please try again.")
+        @formatador.display_line("#{choice} is not a valid choice, please try again.", :foreground_red)
       end
-      red_line("- #{full_description}")
+      @formatador.display_line("- #{full_description}", :foreground_red)
       prompt(&block)
-    end
-
-    def red_line(content)
-      print_line(content, "\e[31m")
     end
 
     def tests(description, tags = [], &block)
@@ -174,9 +150,9 @@ module Shindo
       @befores.push([])
       @afters.push([])
 
-      print_line(description || 'Shindo.tests')
+      @formatador.display_line(description || 'Shindo.tests')
       if block_given?
-        indent { instance_eval(&block) }
+        @formatador.indent { instance_eval(&block) }
       end
 
       @afters.pop
@@ -214,9 +190,9 @@ module Shindo
           end
           @success = @success && success
           if success
-            green_line("+ #{full_description}")
+            @formatador.display_line("+ #{full_description}", :foreground_green)
           else
-            red_line("- #{full_description}")
+            @formatador.display_line("- #{full_description}", :foreground_red)
             if STDOUT.tty?
               prompt(&block)
             end
@@ -226,18 +202,14 @@ module Shindo
             after.call
           end
         else
-          yellow_line("* #{full_description}")
+          @formatador.display_line("* #{full_description}", :foreground_yellow)
         end
       else
-        print_line("_ #{full_description}")
+        @formatador.display_line("_ #{full_description}")
       end
 
       @tag_stack.pop
       @description_stack.pop
-    end
-
-    def yellow_line(content)
-      print_line(content, "\e[33m")
     end
 
   end
