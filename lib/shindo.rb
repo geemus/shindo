@@ -63,12 +63,12 @@ module Shindo
           IRB.setup(nil)
           @irb = IRB::Irb.new(nil)
           IRB.conf[:MAIN_CONTEXT] = @irb.context
-          IRB.conf[:PROMPT][:TREST] = {}
+          IRB.conf[:PROMPT][:SHINDO] = {}
         end
         for key, value in IRB.conf[:PROMPT][:SIMPLE]
-          IRB.conf[:PROMPT][:TREST][key] = "#{@formatador.indentation}#{value}"
+          IRB.conf[:PROMPT][:SHINDO][key] = "#{@formatador.indentation}#{value}"
         end
-        @irb.context.prompt_mode = :TREST
+        @irb.context.prompt_mode = :SHINDO
         @irb.context.workspace = IRB::WorkSpace.new(block.binding)
         begin
           @irb.eval_input
