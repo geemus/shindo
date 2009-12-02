@@ -116,7 +116,7 @@ module Shindo
                 min.upto(current - 1) do |line|
                   @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
-                @formatador.display_line("#{current}  #{data[current].rstrip}", :foreground_yellow)
+                @formatador.display_line("[yellow]#{current}  #{data[current].rstrip}[/]")
                 (current + 1).upto(max - 1) do |line|
                   @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
@@ -125,12 +125,12 @@ module Shindo
             end
           end
         else
-          @formatador.display_line("#{choice} is not a valid backtrace line, please try again.", :foreground_red)
+          @formatador.display_line("[red]#{choice} is not a valid backtrace line, please try again.[/]")
         end
       else
-        @formatador.display_line("#{choice} is not a valid choice, please try again.", :foreground_red)
+        @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
       end
-      @formatador.display_line("- #{description}", :foreground_red)
+      @formatador.display_line("[red]- #{description}[/]")
       prompt(&block)
     end
 
@@ -178,9 +178,9 @@ module Shindo
           end
           @success = @success && success
           if success
-            @formatador.display_line("+ #{description}#{tags}", :foreground_green)
+            @formatador.display_line("[green]+ #{description}#{tags}[/]")
           else
-            @formatador.display_line("- #{description}#{tags}", :foreground_red)
+            @formatador.display_line("[red]- #{description}#{tags}[/]")
             if STDOUT.tty?
               prompt(description, &block)
             end
@@ -190,7 +190,7 @@ module Shindo
             after.call
           end
         else
-          @formatador.display_line("* #{description}", :foreground_yellow)
+          @formatador.display_line("[yellow]* #{description}[/]")
         end
       else
         @formatador.display_line("_ #{description}")
