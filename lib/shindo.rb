@@ -42,14 +42,8 @@ module Shindo
       @befores[-1].push(block)
     end
 
-    def tags
-      unless @tag_stack.flatten.empty?
-        " [#{@tag_stack.flatten.join(', ')}]"
-      end
-    end
-
     def prompt(description, &block)
-      @formatador.display("#{@formatador.indentation}Action? [c,i,q,r,t,#,?]? ")
+      @formatador.display("Action? [c,i,q,r,t,#,?]? ")
       choice = STDIN.gets.strip
       @formatador.display_line("")
       case choice
@@ -139,7 +133,12 @@ module Shindo
       @befores.push([])
       @afters.push([])
 
-      @formatador.display_line(description || 'Shindo.tests')
+      taggings = ''
+      unless tags.empty?
+        taggings = " (#{[*tags].join(', ')})"
+      end
+
+      @formatador.display_line((description || 'Shindo.tests') << taggings)
       if block_given?
         @formatador.indent { instance_eval(&block) }
       end
@@ -151,6 +150,10 @@ module Shindo
 
     def test(description, tags = [], &block)
       @tag_stack.push([*tags])
+      taggings = ''
+      unless tags.empty?
+        taggings = " (#{[*tags].join(', ')})"
+      end
 
       # if the test includes +tags and discludes -tags, evaluate it
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
@@ -178,9 +181,9 @@ module Shindo
           end
           @success = @success && success
           if success
-            @formatador.display_line("[green]+ #{description}#{tags}[/]")
+            @formatador.display_line("[green]+ #{description}#{taggings}[/]")
           else
-            @formatador.display_line("[red]- #{description}#{tags}[/]")
+            @formatador.display_line("[red]- #{description}#{taggings}[/]")
             if STDOUT.tty?
               prompt(description, &block)
             end
@@ -190,10 +193,10 @@ module Shindo
             after.call
           end
         else
-          @formatador.display_line("[yellow]* #{description}[/]")
+          @formatador.display_line("[yellow]* #{description}#{taggings}[/]")
         end
       else
-        @formatador.display_line("_ #{description}")
+        @formatador.display_line("_ #{description}#{taggings}")
       end
 
       @tag_stack.pop

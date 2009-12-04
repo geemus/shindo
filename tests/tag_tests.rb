@@ -23,13 +23,13 @@ Shindo.tests('tags') do
   tests('negative') do
     before { @output = `#{BIN} #{negative.path} -negative` }
     test('is tested')   { @output.include?('+ is tested') }
-    test('is skipped')  { @output.include?('_ is skipped [negative]') }
+    test('is skipped')  { @output.include?('_ is skipped (negative)') }
     test('status')      { $?.exitstatus == 0 }
   end
 
   tests('positive') do
     before { @output = `#{BIN} #{positive.path} +positive` }
-    test('is tested')   { @output.include?('+ is tested [positive]') }
+    test('is tested')   { @output.include?('+ is tested (positive)') }
     test('is skipped')  { @output.include?('_ is skipped') }
     test('status')      { $?.exitstatus == 0 }
   end
