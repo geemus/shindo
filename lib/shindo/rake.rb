@@ -5,7 +5,7 @@ module Shindo
     def initialize
       desc "Run tests"
       task :tests do
-        ruby FileList[ 'tests/**/*_tests.rb' ].join(' ')
+        system "shindo #{FileList[ 'tests/**/*_tests.rb' ].join(' ')}"
       end
     end
 

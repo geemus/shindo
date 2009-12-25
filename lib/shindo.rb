@@ -125,7 +125,7 @@ module Shindo
         @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
       end
       @formatador.display_line("[red]- #{description}[/]")
-      prompt(&block)
+      prompt(description, &block)
     end
 
     def tests(description, tags = [], &block)

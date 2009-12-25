@@ -22,19 +22,6 @@ end
 require File.join(File.dirname(__FILE__), 'lib', 'shindo', 'rake')
 Shindo::Rake.new
 
-# begin
-#   require 'rcov/rcovtask'
-#   Rcov::RcovTask.new do |test|
-#     test.libs << 'tests'
-#     test.pattern = 'tests/**/*_tests.rb'
-#     test.verbose = true
-#   end
-# rescue LoadError
-#   task :rcov do
-#     abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-#   end
-# end
-
 task :tests => :check_dependencies
 
 task :default => :tests
