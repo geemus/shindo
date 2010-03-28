@@ -4,16 +4,16 @@ require 'formatador'
 
 module Shindo
 
-  def self.tests(header = nil, &block)
+  def self.tests(description = nil, tags = [], &block)
     STDOUT.sync = true
-    Shindo::Tests.new(header, &block)
+    Shindo::Tests.new(description, tags, &block)
   end
 
   class Tests
 
     attr_accessor :backtrace
 
-    def initialize(header, tags = [], &block)
+    def initialize(description, tags = [], &block)
       @afters     = []
       @annals     = Annals.new
       @befores    = []
@@ -29,7 +29,7 @@ module Shindo
                           select {|tag| tag.match(/^\-/)}.
                           map {|tag| tag[1..-1]}
       @formatador.display_line('')
-      tests(header, tags, &block)
+      tests(description, tags, &block)
       @formatador.display_line('')
       Thread.current[:success] = @success
     end
