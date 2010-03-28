@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 
-helpers = Dir.glob(File.join(Dir.pwd, '**', '*helper.rb'))
+helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb'))
 tests = []
 tags = []
 for argument in ARGV

@@ -1,16 +1,16 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'shindo'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo'))
+
 require 'tempfile'
 
-unless Object.const_defined?(:BIN)
-  BIN = File.join(File.dirname(__FILE__), '..', 'bin', 'shindo')
+BIN = File.join(File.dirname(__FILE__), '..', 'bin', 'shindo')
+
+def bin(arguments)
+  `#{BIN} #{arguments}`
 end
-tags = Thread.current[:tags] || []
-ARGV.each do |arg|
-    if arg.match(/^[\+\-]/)
-      tags << arg
-    ARGV.delete(arg)
-  end
+
+def tempfile(name, data)
+  tempfile = Tempfile.new(name)
+  tempfile << data
+  tempfile.close
+  tempfile
 end
-Thread.current[:tags] = tags
