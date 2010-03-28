@@ -1,10 +1,10 @@
-success = Tempfile.new('success')
-success << <<-TESTS
+exception = Tempfile.new('exception')
+exception << <<-TESTS
 Shindo.tests do
-  test('success') { true }
+  test('exception') { raise StandardError.new('exception') }
 end
 TESTS
-success.close
+exception.close
 
 failure = Tempfile.new('failure')
 failure << <<-TESTS
@@ -22,7 +22,19 @@ end
 TESTS
 pending.close
 
+success = Tempfile.new('success')
+success << <<-TESTS
+Shindo.tests do
+  test('success') { true }
+end
+TESTS
+success.close
+
 Shindo.tests('basics') do
+  tests('exception') do
+    test('output') { `#{BIN} #{exception.path}`.include?('- exception') }
+    test('status') { $?.exitstatus == 1 }
+  end
   tests('failure') do
     test('output') { `#{BIN} #{failure.path}`.include?('- failure') }
     test('status') { $?.exitstatus == 1 }

@@ -161,14 +161,18 @@ module Shindo
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
         if block_given?
-          for before in @befores.flatten.compact
-            before.call
-          end
-
-          @annals.start
           begin
+            for before in @befores.flatten.compact
+              before.call
+            end
+
+            @annals.start
             success = instance_eval(&block)
             @annals.stop
+
+            for after in @afters.flatten.compact
+              after.call
+            end
           rescue => error
             @annals.stop
             success = false
@@ -189,10 +193,6 @@ module Shindo
             if STDOUT.tty?
               prompt(description, &block)
             end
-          end
-
-          for after in @afters.flatten.compact
-            after.call
           end
         else
           @formatador.display_line("[yellow]* #{description}#{taggings}[/]")
