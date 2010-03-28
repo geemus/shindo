@@ -1,5 +1,3 @@
-require File.join(File.dirname(__FILE__), 'tests_helper')
-
 success = Tempfile.new('success')
 success << <<-TESTS
 Shindo.tests do

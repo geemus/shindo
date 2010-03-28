@@ -1,5 +1,3 @@
-require File.join(File.dirname(__FILE__), 'tests_helper')
-
 negative = Tempfile.new('negative')
 negative << <<-TESTS
 Shindo.tests do

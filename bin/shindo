@@ -1,38 +1,47 @@
 #!/usr/bin/env ruby
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 
-files = []
+helpers = Dir.glob(File.join(Dir.pwd, '**', '*helper.rb'))
+tests = []
 tags = []
+
+if ARGV.empty?
+  ARGV << 'tests'
+end
+
 for argument in ARGV
   if argument.match(/^[\+\-]/)
     tags << argument
   else
     path = File.expand_path(argument)
     if File.directory?(path)
-      files |= Dir.glob(File.join(path, '**', '*_tests.rb'))
+      tests |= Dir.glob(File.join(path, '**', '*tests.rb'))
     else
-      files << path
+      tests << path
     end
   end
 end
 
 @success = true
-def run_in_thread(files, tags)
-  tests = Thread.new {
+def run_in_thread(helpers, tests, tags)
+  shindo = Thread.new {
     Thread.current[:tags] = tags
-    for file in files
+    for file in helpers
+      load(file)
+    end
+    for file in tests
       load(file)
     end
   }
-  tests.join
-  if tests[:reload]
+  shindo.join
+  if shindo[:reload]
     @success = true
-    run_in_thread(files, tags)
+    run_in_thread(helpers, tests, tags)
   else
-    @success = @success && tests[:success]
+    @success = @success && shindo[:success]
   end
 end
-run_in_thread(files, tags)
+run_in_thread(helpers, tests, tags)
 
 if @success
   Kernel.exit(0)
