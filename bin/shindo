@@ -4,11 +4,6 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 helpers = Dir.glob(File.join(Dir.pwd, '**', '*helper.rb'))
 tests = []
 tags = []
-
-if ARGV.empty?
-  ARGV << 'tests'
-end
-
 for argument in ARGV
   if argument.match(/^[\+\-]/)
     tags << argument
@@ -20,6 +15,10 @@ for argument in ARGV
       tests << path
     end
   end
+end
+
+if tests.empty?
+  tests << 'tests'
 end
 
 @success = true
