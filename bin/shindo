@@ -18,7 +18,7 @@ for argument in ARGV
 end
 
 if tests.empty?
-  tests << 'tests'
+  tests |= Dir.glob(File.join('tests', '**', '*tests.rb'))
 end
 
 @success = true
