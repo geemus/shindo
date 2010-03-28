@@ -184,6 +184,7 @@ module Shindo
             end
             method << "! #{error.message} (#{error.class})"
             @annals.unshift(:file => file, :line => line.to_i, :method => method)
+            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
           @success = @success && success
           if success
