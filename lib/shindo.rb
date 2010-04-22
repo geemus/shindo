@@ -43,12 +43,14 @@ module Shindo
     end
 
     def prompt(description, &block)
-      @formatador.display("Action? [c,i,q,r,t,#,?]? ")
+      @formatador.display("Action? [c,e,i,q,r,t,#,?]? ")
       choice = STDIN.gets.strip
       @formatador.display_line
       case choice
       when 'c', 'continue'
         return
+      when /^e .*/, /^eval .*/
+        @formatador.display_line(eval(choice[2..-1], block.binding))
       when 'i', 'interactive', 'irb'
         @formatador.display_line('Starting interactive session...')
         if @irb.nil?
