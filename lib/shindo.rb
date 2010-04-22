@@ -45,11 +45,11 @@ module Shindo
     def prompt(description, &block)
       @formatador.display("Action? [c,i,q,r,t,#,?]? ")
       choice = STDIN.gets.strip
-      @formatador.display_line("")
+      @formatador.display_line
       case choice
-      when 'c'
+      when 'c', 'continue'
         return
-      when 'i'
+      when 'i', 'interactive', 'irb'
         @formatador.display_line('Starting interactive session...')
         if @irb.nil?
           require 'irb'
@@ -68,14 +68,14 @@ module Shindo
           @irb.eval_input
         rescue SystemExit
         end
-      when 'q'
+      when 'q', 'quit', 'exit'
         Thread.current[:success] = false
         Thread.exit
-      when 'r'
+      when 'r', 'reload'
         @formatador.display_line("Reloading...")
         Thread.current[:reload] = true
         Thread.exit
-      when 't'
+      when 't', 'backtrace', 'trace'
         @formatador.indent do
           if @annals.lines.empty?
             @formatador.display_line('no backtrace available')
@@ -85,8 +85,7 @@ module Shindo
             end
           end
         end
-        @formatador.display_line('')
-      when '?'
+      when '?', 'help'
         @formatador.display_line('c - ignore this error and continue')
         @formatador.display_line('i - interactive mode')
         @formatador.display_line('q - quit Shindo')
@@ -115,7 +114,6 @@ module Shindo
                   @formatador.display_line("#{line}  #{data[line].rstrip}")
                 end
               end
-              @formatador.display_line('')
             end
           end
         else
@@ -124,6 +122,7 @@ module Shindo
       else
         @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
       end
+      @formatador.display_line
       @formatador.display_line("[red]- #{description}[/]")
       prompt(description, &block)
     end
@@ -177,12 +176,7 @@ module Shindo
             @annals.stop
             success = false
             file, line, method = error.backtrace.first.split(':')
-            if method
-              method << "in #{method[4...-1]} " # get method from "in `foo'"
-            else
-              method = ''
-            end
-            method << "! #{error.message} (#{error.class})"
+            method << "#{method && "in #{method[4...-1]} "}! #{error.message} (#{error.class})"
             @annals.unshift(:file => file, :line => line.to_i, :method => method)
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
