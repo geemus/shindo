@@ -151,7 +151,7 @@ module Shindo
             @annals.stop
             success = false
             file, line, method = error.backtrace.first.split(':')
-            method << "#{method && "in #{method[4...-1]} "}! #{error.message} (#{error.class})"
+            method = "#{method && "in #{method[4...-1]} "}! #{error.message} (#{error.class})"
             @annals.unshift(:file => file, :line => line.to_i, :method => method)
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
