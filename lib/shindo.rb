@@ -43,7 +43,7 @@ module Shindo
     end
 
     def prompt(description, &block)
-      @formatador.display("Action? [c,e,i,q,r,t,#,?]? ")
+      @formatador.display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
       @formatador.display_line
       case choice
@@ -93,34 +93,7 @@ module Shindo
         @formatador.display_line('q - quit Shindo')
         @formatador.display_line('r - reload and run the tests again')
         @formatador.display_line('t - display backtrace')
-        @formatador.display_line('# - enter a number of a backtrace line to see its context')
         @formatador.display_line('? - display help')
-      when /\d/
-        index = choice.to_i - 1
-        if @annals.lines[index]
-          @formatador.indent do
-            @formatador.display_line("#{@annals.lines[index]}: ")
-            @formatador.indent do
-              @formatador.display("\n")
-              current_line = @annals.buffer[index]
-              File.open(current_line[:file], 'r') do |file|
-                data = file.readlines
-                current = current_line[:line]
-                min     = [0, current - (@annals.max / 2)].max
-                max     = [current + (@annals.max / 2), data.length].min
-                min.upto(current - 1) do |line|
-                  @formatador.display_line("#{line}  #{data[line].rstrip}")
-                end
-                @formatador.display_line("[yellow]#{current}  #{data[current].rstrip}[/]")
-                (current + 1).upto(max - 1) do |line|
-                  @formatador.display_line("#{line}  #{data[line].rstrip}")
-                end
-              end
-            end
-          end
-        else
-          @formatador.display_line("[red]#{choice} is not a valid backtrace line, please try again.[/]")
-        end
       else
         @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
       end
