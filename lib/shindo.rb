@@ -35,11 +35,11 @@ module Shindo
     end
 
     def after(&block)
-      @afters[-1].push(block)
+      @afters.last.push(block)
     end
 
     def before(&block)
-      @befores[-1].push(block)
+      @befores.last.push(block)
     end
 
     def prompt(description, &block)
