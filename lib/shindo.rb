@@ -160,17 +160,18 @@ end
 
 if __FILE__ == $0
 
-def bar(string, remaining = ['b','a','r'])
-  if remaining.empty?
-    string
-  else
-    bar(string << remaining.shift, remaining)
+  def bar(string, remaining = ['b','a','r'])
+    if remaining.empty?
+      string
+    else
+      bar(string << remaining.shift, remaining)
+    end
   end
-end
 
   Shindo.tests do
 
     test('failure') do
+      raise StandardError.new('exception')
       @foo = ''
       bar(@foo)
       @foo == 'foo'
