@@ -19,15 +19,19 @@ module Shindo
       @tag_stack  = []
       Thread.current[:reload] = false;
       Thread.current[:tags] ||= []
-      @if_tagged      = Thread.current[:tags].
-                          select {|tag| tag.match(/^\+/)}.
-                          map {|tag| tag[1..-1]}
-      @unless_tagged  = Thread.current[:tags].
-                          select {|tag| tag.match(/^\-/)}.
-                          map {|tag| tag[1..-1]}
-      @formatador.display_line('')
+      @if_tagged = []
+      @unless_tagged = []
+      for tag in Thread.current[:tags]
+        case tag[0...1]
+        when '+'
+          @if_tagged << tag[1..-1]
+        when '-'
+          @unless_tagged << tag[1..-1]
+        end
+      end
+      @formatador.display_line
       tests(description, tags, &block)
-      @formatador.display_line('')
+      @formatador.display_line
       Thread.current[:success] = @success
     end
 
