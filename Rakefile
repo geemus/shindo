@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/geemus/shindo"
     gem.authors = ["geemus (Wesley Beary)"]
     gem.rubyforge_project = "shindo"
-    gem.add_dependency('annals', '>=0.0.2')
+    gem.add_dependency('gestalt', '>=0.0.1')
     gem.add_dependency('formatador', '>=0.0.2')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

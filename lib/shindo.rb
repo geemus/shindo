@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'annals'
+require 'gestalt'
 require 'formatador'
 
 module Shindo
@@ -11,11 +11,8 @@ module Shindo
 
   class Tests
 
-    attr_accessor :backtrace
-
     def initialize(description, tags = [], &block)
       @afters     = []
-      @annals     = Annals.new
       @befores    = []
       @formatador = Formatador.new
       @success    = true
@@ -78,15 +75,7 @@ module Shindo
         Thread.current[:reload] = true
         Thread.exit
       when 't', 'backtrace', 'trace'
-        @formatador.indent do
-          if @annals.lines.empty?
-            @formatador.display_line('no backtrace available')
-          else
-            @annals.lines.each_with_index do |line, index|
-              @formatador.display_line("#{' ' * (2 - index.to_s.length)}#{index}  #{line}")
-            end
-          end
-        end
+        Gestalt.trace(&block)
       when '?', 'help'
         @formatador.display_line('c - ignore this error and continue')
         @formatador.display_line('i - interactive mode')
@@ -108,12 +97,11 @@ module Shindo
       @befores.push([])
       @afters.push([])
 
-      taggings = ''
       unless tags.empty?
         taggings = " (#{tags.join(', ')})"
       end
 
-      @formatador.display_line((description || 'Shindo.tests') << taggings)
+      @formatador.display_line((description || 'Shindo.tests') << taggings.to_s)
       if block_given?
         @formatador.indent { instance_eval(&block) }
       end
@@ -139,20 +127,12 @@ module Shindo
             for before in @befores.flatten.compact
               before.call
             end
-
-            @annals.start
             success = instance_eval(&block)
-            @annals.stop
-
             for after in @afters.flatten.compact
               after.call
             end
           rescue => error
-            @annals.stop
             success = false
-            file, line, method = error.backtrace.first.split(':')
-            method = "#{method && "in #{method[4...-1]} "}! #{error.message} (#{error.class})"
-            @annals.unshift(:file => file, :line => line.to_i, :method => method)
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
           @success = @success && success
@@ -172,6 +152,29 @@ module Shindo
       end
 
       @tag_stack.pop
+    end
+
+  end
+
+end
+
+
+if __FILE__ == $0
+
+def bar(string, remaining = ['b','a','r'])
+  if remaining.empty?
+    string
+  else
+    bar(string << remaining.shift, remaining)
+  end
+end
+
+  Shindo.tests do
+
+    test('failure') do
+      @foo = ''
+      bar(@foo)
+      @foo == 'foo'
     end
 
   end
