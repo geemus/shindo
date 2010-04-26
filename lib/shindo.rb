@@ -114,7 +114,6 @@ module Shindo
     def test(description, tags = [], &block)
       tags = [*tags]
       @tag_stack.push(tags)
-      taggings = ''
       unless tags.empty?
         taggings = " (#{tags.join(', ')})"
       end
@@ -137,18 +136,18 @@ module Shindo
           end
           @success = @success && success
           if success
-            @formatador.display_line("[green]+ #{description}#{taggings}[/]")
+            @formatador.display_line("[green]+ #{description}#{taggings.to_s}[/]")
           else
-            @formatador.display_line("[red]- #{description}#{taggings}[/]")
+            @formatador.display_line("[red]- #{description}#{taggings.to_s}[/]")
             if STDOUT.tty?
               prompt(description, &block)
             end
           end
         else
-          @formatador.display_line("[yellow]* #{description}#{taggings}[/]")
+          @formatador.display_line("[yellow]* #{description}#{taggings.to_s}[/]")
         end
       else
-        @formatador.display_line("_ #{description}#{taggings}")
+        @formatador.display_line("_ #{description}#{taggings.to_s}")
       end
 
       @tag_stack.pop
