@@ -15,9 +15,9 @@ module Shindo
       @afters     = []
       @befores    = []
       @formatador = Formatador.new
-      @success    = true
       @tag_stack  = []
-      Thread.current[:reload] = false;
+      Thread.current[:reload] = false
+      Thread.current[:success] = true
       Thread.current[:tags] ||= []
       @if_tagged = []
       @unless_tagged = []
@@ -32,7 +32,6 @@ module Shindo
       @formatador.display_line
       tests(description, tags, &block)
       @formatador.display_line
-      Thread.current[:success] = @success
     end
 
     def after(&block)
@@ -130,16 +129,15 @@ module Shindo
             for before in @befores.flatten.compact
               before.call
             end
-            success = instance_eval(&block)
+            Thread.current[:success] = instance_eval(&block)
             for after in @afters.flatten.compact
               after.call
             end
           rescue => error
-            success = false
+            Thread.current[:success] = false
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
-          @success = @success && success
-          if success
+          if Thread.current[:success]
             @formatador.display_line("[green]+ #{description}#{taggings.to_s}[/]")
           else
             @formatador.display_line("[red]- #{description}#{taggings.to_s}[/]")
