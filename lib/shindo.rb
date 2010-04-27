@@ -48,50 +48,62 @@ module Shindo
       @formatador.display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
       @formatador.display_line
-      case choice
-      when 'c', 'continue'
-        return
-      when /^e .*/, /^eval .*/
-        @formatador.display_line(eval(choice[2..-1], block.binding))
-      when 'i', 'interactive', 'irb'
-        @formatador.display_line('Starting interactive session...')
-        if @irb.nil?
-          require 'irb'
-          ARGV.clear # Avoid passing args to IRB
-          IRB.setup(nil)
-          @irb = IRB::Irb.new(nil)
-          IRB.conf[:MAIN_CONTEXT] = @irb.context
-          IRB.conf[:PROMPT][:SHINDO] = {}
+      @formatador.indent do
+        case choice
+        when 'c', 'continue'
+          return
+        when /^e .*/, /^eval .*/
+          value = eval(choice[2..-1], block.binding)
+          if value.nil?
+            value = 'nil'
+          end
+          @formatador.display_line(value)
+        when 'i', 'interactive', 'irb'
+          @formatador.display_line('Starting interactive session...')
+          if @irb.nil?
+            require 'irb'
+            ARGV.clear # Avoid passing args to IRB
+            IRB.setup(nil)
+            @irb = IRB::Irb.new(nil)
+            IRB.conf[:MAIN_CONTEXT] = @irb.context
+            IRB.conf[:PROMPT][:SHINDO] = {}
+          end
+          for key, value in IRB.conf[:PROMPT][:SIMPLE]
+            IRB.conf[:PROMPT][:SHINDO][key] = "#{@formatador.indentation}#{value}"
+          end
+          @irb.context.prompt_mode = :SHINDO
+          @irb.context.workspace = IRB::WorkSpace.new(block.binding)
+          begin
+            @irb.eval_input
+          rescue SystemExit
+          end
+        when 'q', 'quit', 'exit'
+          Thread.current[:success] = false
+          Thread.exit
+        when 'r', 'reload'
+          @formatador.display_line("Reloading...")
+          Thread.current[:reload] = true
+          Thread.exit
+        when 't', 'backtrace', 'trace'
+          # Gestalt#trace, but with our formatador
+          gestalt = Gestalt.new
+          gestalt.formatador = @formatador
+          gestalt.run(&block)
+          gestalt.display_calls
+        when '?', 'help'
+          @formatador.display_lines([
+            'c - ignore this error and continue',
+            'i - interactive mode',
+            'q - quit Shindo',
+            'r - reload and run the tests again',
+            't - display backtrace',
+            '? - display help'
+          ])
+        else
+          @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
         end
-        for key, value in IRB.conf[:PROMPT][:SIMPLE]
-          IRB.conf[:PROMPT][:SHINDO][key] = "#{@formatador.indentation}#{value}"
-        end
-        @irb.context.prompt_mode = :SHINDO
-        @irb.context.workspace = IRB::WorkSpace.new(block.binding)
-        begin
-          @irb.eval_input
-        rescue SystemExit
-        end
-      when 'q', 'quit', 'exit'
-        Thread.current[:success] = false
-        Thread.exit
-      when 'r', 'reload'
-        @formatador.display_line("Reloading...")
-        Thread.current[:reload] = true
-        Thread.exit
-      when 't', 'backtrace', 'trace'
-        Gestalt.trace(&block)
-      when '?', 'help'
-        @formatador.display_line('c - ignore this error and continue')
-        @formatador.display_line('i - interactive mode')
-        @formatador.display_line('q - quit Shindo')
-        @formatador.display_line('r - reload and run the tests again')
-        @formatador.display_line('t - display backtrace')
-        @formatador.display_line('? - display help')
-      else
-        @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
+        @formatador.display_line
       end
-      @formatador.display_line
       @formatador.display_line("[red]- #{description}[/]")
       prompt(description, &block)
     end
