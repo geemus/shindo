@@ -1,10 +1,11 @@
 require 'rubygems'
-require 'gestalt'
 require 'formatador'
 
 module Shindo
 
-  VERSION = '0.0.17'
+  unless VERSION
+    VERSION = '0.0.17'
+  end
 
   def self.tests(description = nil, tags = [], &block)
     STDOUT.sync = true
@@ -85,6 +86,7 @@ module Shindo
           Thread.current[:reload] = true
           Thread.exit
         when 't', 'backtrace', 'trace'
+          require 'gestalt'
           # Gestalt#trace, but with our formatador
           gestalt = Gestalt.new
           gestalt.formatador = @formatador
