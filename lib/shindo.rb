@@ -4,6 +4,8 @@ require 'formatador'
 
 module Shindo
 
+  VERSION = '0.0.17'
+
   def self.tests(description = nil, tags = [], &block)
     STDOUT.sync = true
     Shindo::Tests.new(description, tags, &block)
