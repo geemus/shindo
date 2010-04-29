@@ -2,13 +2,7 @@ Shindo.tests('tags') do
 
   tests('negative') do
     before do
-      @tempfile = tempfile('negative', <<-TESTS)
-      Shindo.tests do
-        test('is tested') { true }
-        test('is skipped', 'negative') { false }
-      end
-      TESTS
-      @output = bin("#{@tempfile.path} -negative")
+      @output = bin("#{path('negative')} -negative")
     end
     test('is tested')   { @output.include?('+ is tested') }
     test('is skipped')  { @output.include?('_ is skipped (negative)') }
@@ -17,13 +11,7 @@ Shindo.tests('tags') do
 
   tests('positive') do
     before do
-      @tempfile = tempfile('positive', <<-TESTS)
-      Shindo.tests do
-        test('is tested', 'positive') { true }
-        test('is skipped') { false }
-      end
-      TESTS
-      @output = bin("#{@tempfile.path} +positive")
+      @output = bin("#{path('positive')} +positive")
     end
     test('is tested')   { @output.include?('+ is tested (positive)') }
     test('is skipped')  { @output.include?('_ is skipped') }

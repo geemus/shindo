@@ -1,0 +1,4 @@
+Shindo.tests do
+  test('is tested') { true }
+  test('is skipped', 'negative') { false }
+end

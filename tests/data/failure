@@ -1,0 +1,3 @@
+Shindo.tests do
+  test('failure') { false }
+end

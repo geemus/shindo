@@ -1,0 +1,3 @@
+Shindo.tests do
+  test('exception') { raise StandardError.new('exception') }
+end
