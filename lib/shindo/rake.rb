@@ -3,9 +3,9 @@ module Shindo
   class Rake
 
     def initialize
-      desc "Run tests"
+      desc "Run shindo tests"
       task :tests do
-        system "shindo #{FileList[ 'tests/**/*_tests.rb' ].join(' ')}"
+        system 'shindo'
       end
     end
 
