@@ -87,7 +87,7 @@ module Shindo
           Thread.exit
         when 't', 'backtrace', 'trace'
           require 'gestalt'
-          Gestalt.trace(@formatador, &block)
+          Gestalt.trace({'c-call' => true, 'formatador' => @formatador}, &block)
         when '?', 'help'
           @formatador.display_lines([
             'c - ignore this error and continue',
