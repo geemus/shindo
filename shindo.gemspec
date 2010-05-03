@@ -12,10 +12,10 @@ Gem::Specification.new do |s|
   ## Leave these as is they will be modified for you by the rake gemspec task.
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
-  s.name              = 'NAME'
-  s.version           = '0.0'
-  s.date              = '2010-01-01'
-  s.rubyforge_project = 'NAME'
+  s.name              = 'shindo'
+  s.version           = '0.0.18'
+  s.date              = '2010-05-02'
+  s.rubyforge_project = 'shindo'
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
@@ -59,7 +59,25 @@ Gem::Specification.new do |s|
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
-  s.files = %w[]
+  s.files = %w[
+    Gemfile
+    Gemfile.lock
+    README.rdoc
+    Rakefile
+    bin/shindo
+    lib/shindo.rb
+    lib/shindo/rake.rb
+    shindo.gemspec
+    tests/basic_tests.rb
+    tests/data/exception
+    tests/data/failure
+    tests/data/negative
+    tests/data/pending
+    tests/data/positive
+    tests/data/success
+    tests/tag_tests.rb
+    tests/tests_helper.rb
+  ]
   # = MANIFEST =
 
   ## Test files will be grabbed from the file list. Make sure the path glob
