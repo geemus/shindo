@@ -3,7 +3,7 @@ require 'formatador'
 
 module Shindo
 
-  unless VERSION
+  unless const_defined?(:VERSION)
     VERSION = '0.0.18'
   end
 
