@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 
-helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb'))
+helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
 tests = []
 tags = []
 for argument in ARGV
