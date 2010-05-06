@@ -2,7 +2,6 @@
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 
 helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
-tests = []
 tags = []
 for argument in ARGV
   if argument.match(/^[\+\-]/)
@@ -10,15 +9,21 @@ for argument in ARGV
   else
     path = File.expand_path(argument)
     if File.directory?(path)
+      tests ||= []
       tests |= Dir.glob(File.join(path, '**', '*tests.rb'))
-    else
+    elsif File.exists?(path)
+      tests ||= []
       tests << path
+    else
+      Formatador.display_line("[red][bold]#{argument}[/] [red]does not exist, please fix this path and try again.[/]")
+      Kernel.exit(1)
     end
   end
 end
 
-if tests.empty?
-  tests |= Dir.glob(File.join('tests', '**', '*tests.rb'))
+# ARGV was empty or only contained tags
+unless tests
+  tests = Dir.glob(File.join('tests', '**', '*tests.rb'))
 end
 
 @success = true
