@@ -26,7 +26,6 @@ unless tests
   tests = Dir.glob(File.join('tests', '**', '*tests.rb'))
 end
 
-@success = true
 @started_at = Time.now
 def run_in_thread(helpers, tests, tags)
   shindo = Thread.new {
@@ -40,16 +39,23 @@ def run_in_thread(helpers, tests, tags)
   }
   shindo.join
   if shindo[:reload]
-    @success = true
     run_in_thread(helpers, tests, tags)
   else
-    @success = @success && shindo[:success]
+    @totals = shindo[:totals]
   end
 end
 run_in_thread(helpers, tests, tags)
 
+@success = @totals[:failed] == 0
+lines = []
+lines << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
+lines << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
+lines << "[light_black]#{@totals[:skipped]} skipped[/]," if @totals[:skipped] > 0
+lines << "[green]#{@totals[:succeeded]} succeeded[/]" if @totals[:succeeded] > 0
+lines = lines[0...-2].join(', ') << ' and ' << lines[-1] if lines.length > 3
+lines << "in [bold]#{Time.now - @started_at}[/] seconds"
 Formatador.display_line
-Formatador.display_line("#{@success ? '[green]Success' : '[red]Failure'} [light_black]in[/] #{Time.now - @started_at} [light_black]seconds[/]")
+Formatador.display_line(lines.join(' '))
 Formatador.display_line
 
 if @success

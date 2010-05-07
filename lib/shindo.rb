@@ -20,8 +20,8 @@ module Shindo
       @formatador = Formatador.new
       @tag_stack  = []
       Thread.current[:reload] = false
-      Thread.current[:success] = true
       Thread.current[:tags] ||= []
+      Thread.current[:totals] = { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
       @if_tagged = []
       @unless_tagged = []
       for tag in Thread.current[:tags]
@@ -146,21 +146,25 @@ module Shindo
               after.call
             end
           rescue => error
-            Thread.current[:success] = false
+            Thread.current[:totals][:failed] += 1
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
           if Thread.current[:success]
+            Thread.current[:totals][:succeeded] += 1
             @formatador.display_line("[green]+ #{description}#{taggings.to_s}[/]")
           else
+            Thread.current[:totals][:failed] += 1
             @formatador.display_line("[red]- #{description}#{taggings.to_s}[/]")
             if STDOUT.tty?
               prompt(description, &block)
             end
           end
         else
+          Thread.current[:totals][:pending] += 1
           @formatador.display_line("[yellow]* #{description}#{taggings.to_s}[/]")
         end
       else
+        Thread.current[:totals][:skipped] += 1
         @formatador.display_line("_ #{description}#{taggings.to_s}")
       end
 
