@@ -27,6 +27,7 @@ unless tests
 end
 
 @success = true
+@started_at = Time.now
 def run_in_thread(helpers, tests, tags)
   shindo = Thread.new {
     Thread.current[:tags] = tags
@@ -46,6 +47,10 @@ def run_in_thread(helpers, tests, tags)
   end
 end
 run_in_thread(helpers, tests, tags)
+
+Formatador.display_line
+Formatador.display_line("#{@success ? '[green]Success' : '[red]Failure'} [light_black]in[/] #{Time.now - @started_at} [light_black]seconds[/]")
+Formatador.display_line
 
 if @success
   Kernel.exit(0)
