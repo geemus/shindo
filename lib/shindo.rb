@@ -113,7 +113,7 @@ module Shindo
       @afters.push([])
 
       unless tags.empty?
-        taggings = " (#{tags.join(', ')})"
+        taggings = " [#{tags.join(', ')}]"
       end
 
       @formatador.display_line((description || 'Shindo.tests') << taggings.to_s)
@@ -130,7 +130,7 @@ module Shindo
       tags = [*tags]
       @tag_stack.push(tags)
       unless tags.empty?
-        taggings = " (#{tags.join(', ')})"
+        taggings = " [#{tags.join(', ')}]"
       end
 
       # if the test includes +tags and discludes -tags, evaluate it
