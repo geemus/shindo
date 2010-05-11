@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
   ## List your runtime dependencies here. Runtime dependencies are those
   ## that are needed for an end user to actually USE your code.
   s.add_dependency('formatador', '>=0.0.14')
-  s.add_dependency('gestalt', '>=0.0.6')
+  s.add_dependency('gestalt', '>=0.0.7')
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
