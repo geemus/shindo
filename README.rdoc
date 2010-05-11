@@ -4,61 +4,42 @@ Simple depth first ruby testing, watch and learn.
 
 == Writing tests
 
-There are two commands you should know, 'tests' and 'test'. Tests help you group similar calls to test, but their return value is ignored.  The return value of test, on the other hand, determines success or failure.
+Tests group similar assertions, but their return value is ignored.
 
-A successful test should return true. (yay)
+After that you just test based on the two things a ruby thing should do, raise or return.
 
-  Shindo.tests do
-    test('something really important') { true }
-  end
-
-A failing test should return false or nil. (boo)
+Returns takes what you expect and checks a block to see if the return value matches:
 
   Shindo.tests do
-    test('something (hopefully) less important') { false }
+    returns(true) { true }
+    returns(false) { false }
   end
 
-A pending test shouldn't even have a block (meh)
+Raises takes what error you expect and checks to see if the block will raise it:
 
   Shindo.tests do
-    test('something that hasn't been gotten around to yet')
+    raises(StandardError) { StandardError.new }
   end
 
-Grouping tests
-
-  Shindo.tests do
-    tests('foo/bar') do
-      test('foo') { true }
-      test('bar') { true }
-    end
-  end
-
-You can also have descriptions for Shindo.tests, and write that last one like this
+You can also override the default descriptions:
 
   Shindo.tests('foo/bar') do
-    test('foo') { true }
-    test('bar') { false }
+    returns('foo', 'returns foo when bar') { 'foo' }
+    returns('bar', 'returns bar when qux') { 'bar' }
   end
-
-Nest tests as deeply as you would like.
 
 Then, if you want to get real fancy you can also tag your tests, to help narrow down which ones to run
 
-  Shindo.tests do
-    tests('foo/bar', ['foo', 'bar']) do
+  Shindo.tests('tests for foo', 'foo') do
       test('foo') { true }
+  end
+
+  Shindo.tests('tests for bar', 'bar') do
       test('bar') { true }
     end
   end
 
-Or if you can narrow down even more tightly
-
-  Shindo.tests do
-    tests('foo/bar') do
-      test('foo', ['foo']) { true }
-      test('bar', ['bar']) { true }
-    end
-  end
+Note: you'll have to supply a non-default description first, and then follow up with tags.
 
 == Running tests
 

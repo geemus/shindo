@@ -80,7 +80,6 @@ module Shindo
           rescue SystemExit
           end
         when 'q', 'quit', 'exit'
-          Thread.current[:success] = false
           Thread.exit
         when 'r', 'reload'
           @formatador.display_line("Reloading...")
@@ -137,13 +136,39 @@ module Shindo
       @tag_stack.pop
     end
 
+    def raises(error, description = "raises #{error.inspect}", &block)
+      assertion(:raises, error, description, &block)
+    end
+
+    def returns(value, description = "returns #{value.inspect}", &block)
+      assertion(:returns, value, description, &block)
+    end
+
     def test(description, &block)
+      @formatador.display_line("[yellow][WARN] test is deprecated, use returns(true)")
+      returns(true, description, &block)
+    end
+
+    private
+
+    def assertion(type, expectation, description, &block)
+      success = nil
       if block_given?
         begin
           for before in @befores.flatten.compact
             before.call
           end
-          Thread.current[:success] = instance_eval(&block)
+          success = case type
+          when :raises
+            begin
+              instance_eval(&block)
+              false
+            rescue expectation
+              true
+            end
+          when :returns
+            instance_eval(&block) == expectation
+          end
           for after in @afters.flatten.compact
             after.call
           end
@@ -151,7 +176,7 @@ module Shindo
           Thread.current[:totals][:failed] += 1
           @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
         end
-        if Thread.current[:success]
+        if success
           Thread.current[:totals][:succeeded] += 1
           @formatador.display_line("[green]+ #{description}[/]")
         else
