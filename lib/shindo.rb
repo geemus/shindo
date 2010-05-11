@@ -48,11 +48,12 @@ module Shindo
     def prompt(description, &block)
       @formatador.display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
+      continue = false
       @formatador.display_line
       @formatador.indent do
         case choice
         when 'c', 'continue'
-          return
+          continue = true
         when /^e .*/, /^eval .*/
           value = eval(choice[2..-1], block.binding)
           if value.nil?
@@ -102,8 +103,10 @@ module Shindo
         end
         @formatador.display_line
       end
-      @formatador.display_line("[red]- #{description}[/]")
-      prompt(description, &block)
+      unless continue
+        @formatador.display_line("[red]- #{description}[/]")
+        prompt(description, &block)
+      end
     end
 
     def tests(description, tags = [], &block)
