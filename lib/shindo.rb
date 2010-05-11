@@ -112,13 +112,21 @@ module Shindo
       @befores.push([])
       @afters.push([])
 
+      description ||= 'Shindo.tests'
+      description = "[bold]#{description}[normal]"
       unless tags.empty?
-        taggings = " [#{tags.join(', ')}]"
+        description << " (#{tags.join(', ')})"
       end
 
-      @formatador.display_line((description || 'Shindo.tests') << taggings.to_s)
-      if block_given?
-        @formatador.indent { instance_eval(&block) }
+      # if the test includes +tags and discludes -tags, evaluate it
+      if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
+          (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
+        @formatador.display_line(description)
+        if block_given?
+          @formatador.indent { instance_eval(&block) }
+        end
+      else
+        @formatador.display_line("[light_black]#{description}[/]")
       end
 
       @afters.pop
@@ -126,73 +134,34 @@ module Shindo
       @tag_stack.pop
     end
 
-    def test(description, tags = [], &block)
-      tags = [*tags]
-      @tag_stack.push(tags)
-      unless tags.empty?
-        taggings = " [#{tags.join(', ')}]"
-      end
-
-      # if the test includes +tags and discludes -tags, evaluate it
-      if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
-          (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
-        if block_given?
-          begin
-            for before in @befores.flatten.compact
-              before.call
-            end
-            Thread.current[:success] = instance_eval(&block)
-            for after in @afters.flatten.compact
-              after.call
-            end
-          rescue => error
-            Thread.current[:totals][:failed] += 1
-            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+    def test(description, &block)
+      if block_given?
+        begin
+          for before in @befores.flatten.compact
+            before.call
           end
-          if Thread.current[:success]
-            Thread.current[:totals][:succeeded] += 1
-            @formatador.display_line("[green]+ #{description}#{taggings.to_s}[/]")
-          else
-            Thread.current[:totals][:failed] += 1
-            @formatador.display_line("[red]- #{description}#{taggings.to_s}[/]")
-            if STDOUT.tty?
-              prompt(description, &block)
-            end
+          Thread.current[:success] = instance_eval(&block)
+          for after in @afters.flatten.compact
+            after.call
           end
+        rescue => error
+          Thread.current[:totals][:failed] += 1
+          @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+        end
+        if Thread.current[:success]
+          Thread.current[:totals][:succeeded] += 1
+          @formatador.display_line("[green]+ #{description}[/]")
         else
-          Thread.current[:totals][:pending] += 1
-          @formatador.display_line("[yellow]* #{description}#{taggings.to_s}[/]")
+          Thread.current[:totals][:failed] += 1
+          @formatador.display_line("[red]- #{description}[/]")
+          if STDOUT.tty?
+            prompt(description, &block)
+          end
         end
       else
-        Thread.current[:totals][:skipped] += 1
-        @formatador.display_line("_ #{description}#{taggings.to_s}")
+        Thread.current[:totals][:pending] += 1
+        @formatador.display_line("[yellow]* #{description}[/]")
       end
-
-      @tag_stack.pop
-    end
-
-  end
-
-end
-
-
-if __FILE__ == $0
-
-  def bar(string, remaining = ['b','a','r'])
-    if remaining.empty?
-      string
-    else
-      bar(string << remaining.shift, remaining)
-    end
-  end
-
-  Shindo.tests do
-
-    test('failure') do
-      raise StandardError.new('exception')
-      @foo = ''
-      bar(@foo)
-      @foo == 'foo'
     end
 
   end

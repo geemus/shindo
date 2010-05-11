@@ -50,7 +50,6 @@ run_in_thread(helpers, tests, tags)
 lines = []
 lines << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
 lines << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
-lines << "[light_black]#{@totals[:skipped]} skipped[/]," if @totals[:skipped] > 0
 lines << "[green]#{@totals[:succeeded]} succeeded[/]" if @totals[:succeeded] > 0
 lines = lines[0...-2].join(', ') << ' and ' << lines[-1] if lines.length > 3
 lines << "in [bold]#{Time.now - @started_at}[/] seconds"
