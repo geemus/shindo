@@ -46,11 +46,12 @@ def run_in_thread(helpers, tests, tags)
 end
 run_in_thread(helpers, tests, tags)
 
-@success = @totals[:failed] == 0
+@totals   ||= { :failed => 0, :pending => 0, :succeeded => 0 }
+@success  = @totals[:failed] == 0
 lines = []
 lines << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
 lines << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
-lines << "[green]#{@totals[:succeeded]} succeeded[/]" if @totals[:succeeded] > 0
+lines << "[green]#{@totals[:succeeded]} succeeded[/]"
 lines = lines[0...-2].join(', ') << ' and ' << lines[-1] if lines.length > 3
 lines << "in [bold]#{Time.now - @started_at}[/] seconds"
 Formatador.display_line
