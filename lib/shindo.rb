@@ -80,7 +80,7 @@ module Shindo
           rescue SystemExit
           end
         when 'q', 'quit', 'exit'
-          Thread.exit
+          @exit = true
         when 'r', 'reload'
           @formatador.display_line("Reloading...")
           Thread.current[:reload] = true
@@ -102,13 +102,15 @@ module Shindo
         end
         @formatador.display_line
       end
-      unless continue
+      unless continue || @exit
         @formatador.display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
     end
 
     def tests(description, tags = [], &block)
+      return if @exit
+
       tags = [*tags]
       @tag_stack.push(tags)
       @befores.push([])
@@ -134,6 +136,8 @@ module Shindo
       @afters.pop
       @befores.pop
       @tag_stack.pop
+
+      Thread.exit if @exit
     end
 
     def raises(error, description = "raises #{error.inspect}", &block)
@@ -152,6 +156,7 @@ module Shindo
     private
 
     def assertion(type, expectation, description, &block)
+      return if @exit
       success = nil
       if block_given?
         begin
