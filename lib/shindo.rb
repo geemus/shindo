@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'formatador'
+require 'gestalt'
 
 module Shindo
 
@@ -55,7 +56,7 @@ module Shindo
         when 'c', 'continue'
           continue = true
         when /^e .*/, /^eval .*/
-          value = eval(choice[2..-1], block.binding)
+          value = eval(choice[2..-1], @gestalt.bindings.last)
           if value.nil?
             value = 'nil'
           end
@@ -74,20 +75,24 @@ module Shindo
             IRB.conf[:PROMPT][:SHINDO][key] = "#{@formatador.indentation}#{value}"
           end
           @irb.context.prompt_mode = :SHINDO
-          @irb.context.workspace = IRB::WorkSpace.new(block.binding)
+          @irb.context.workspace = IRB::WorkSpace.new(@gestalt.bindings.last)
           begin
             @irb.eval_input
           rescue SystemExit
           end
         when 'q', 'quit', 'exit'
+          @formatador.display_line("Exiting...")
           @exit = true
         when 'r', 'reload'
           @formatador.display_line("Reloading...")
           Thread.current[:reload] = true
           Thread.exit
         when 't', 'backtrace', 'trace'
-          require 'gestalt'
-          Gestalt.trace({'c-call' => true, 'formatador' => @formatador}, &block)
+          if @gestalt.calls.empty?
+            @formatador.display_line("[red]No methods were called, so no backtrace was captured.[/]")
+          else
+            @gestalt.display_calls
+          end
         when '?', 'help'
           @formatador.display_lines([
             'c - ignore this error and continue',
@@ -158,6 +163,7 @@ module Shindo
     def assertion(type, expectation, description, &block)
       return if @exit
       success = nil
+      @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
       if block_given?
         begin
           for before in @befores.flatten.compact
@@ -165,14 +171,9 @@ module Shindo
           end
           success = case type
           when :raises
-            begin
-              instance_eval(&block)
-              false
-            rescue expectation
-              true
-            end
+            @gestalt.run(&block).is_a?(expectation)
           when :returns
-            instance_eval(&block) == expectation
+            @gestalt.run(&block) == expectation
           end
           for after in @afters.flatten.compact
             after.call

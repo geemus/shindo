@@ -1,24 +1,18 @@
 --- 
+dependencies: 
+  formatador: 
+    group: 
+    - :default
+    version: ">= 0.0.14"
+  gestalt: 
+    group: 
+    - :default
+    version: ">= 0.0.11"
 specs: 
-- rake: 
-    version: 0.8.7
 - formatador: 
     version: 0.0.14
 - gestalt: 
-    version: 0.0.6
-hash: 967644697cb16cde400ae3abbd4c764876c4a3b0
+    version: 0.0.11
+hash: 5c2e77551db0a4772439a57b49e0ecc967e4dfe3
 sources: []
 
-dependencies: 
-  formatador: 
-    version: ">= 0.0.14"
-    group: 
-    - :default
-  rake: 
-    version: ">= 0"
-    group: 
-    - :default
-  gestalt: 
-    version: ">= 0.0.6"
-    group: 
-    - :default

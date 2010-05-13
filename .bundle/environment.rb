@@ -174,13 +174,12 @@ end
 module Bundler
   ENV_LOADED   = true
   LOCKED_BY    = '0.9.25'
-  FINGERPRINT  = "967644697cb16cde400ae3abbd4c764876c4a3b0"
+  FINGERPRINT  = "5c2e77551db0a4772439a57b49e0ecc967e4dfe3"
   HOME         = '/Users/geemus/.bundle/ruby/1.8/bundler'
-  AUTOREQUIRES = {:default=>[["rake", false], ["formatador", false], ["gestalt", false]]}
+  AUTOREQUIRES = {:default=>[["formatador", false], ["gestalt", false]]}
   SPECS        = [
-        {:loaded_from=>"/Users/geemus/.bundle/ruby/1.8/specifications/rake-0.8.7.gemspec", :load_paths=>["/Users/geemus/.bundle/ruby/1.8/gems/rake-0.8.7/lib"], :name=>"rake"},
-        {:loaded_from=>"/Users/geemus/.bundle/ruby/1.8/specifications/formatador-0.0.14.gemspec", :load_paths=>["/Users/geemus/.bundle/ruby/1.8/gems/formatador-0.0.14/lib"], :name=>"formatador"},
-        {:loaded_from=>"/Users/geemus/.bundle/ruby/1.8/specifications/gestalt-0.0.6.gemspec", :load_paths=>["/Users/geemus/.bundle/ruby/1.8/gems/gestalt-0.0.6/lib"], :name=>"gestalt"},
+        {:load_paths=>["/Users/geemus/.bundle/ruby/1.8/gems/formatador-0.0.14/lib"], :loaded_from=>"/Users/geemus/.bundle/ruby/1.8/specifications/formatador-0.0.14.gemspec", :name=>"formatador"},
+        {:load_paths=>["/Library/Ruby/Gems/1.8/gems/gestalt-0.0.11/lib"], :loaded_from=>"/Library/Ruby/Gems/1.8/specifications/gestalt-0.0.11.gemspec", :name=>"gestalt"},
       ].map do |hash|
     if hash[:virtual_spec]
       spec = eval(hash[:virtual_spec], TOPLEVEL_BINDING, "<virtual spec for '#{hash[:name]}'>")
