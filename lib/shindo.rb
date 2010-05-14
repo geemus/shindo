@@ -22,7 +22,7 @@ module Shindo
       @tag_stack  = []
       Thread.current[:reload] = false
       Thread.current[:tags] ||= []
-      Thread.current[:totals] = { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
+      Thread.current[:totals] ||= { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
       @if_tagged = []
       @unless_tagged = []
       for tag in Thread.current[:tags]
