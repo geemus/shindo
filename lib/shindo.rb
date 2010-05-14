@@ -86,7 +86,6 @@ module Shindo
         when 'r', 'reload'
           @formatador.display_line("Reloading...")
           Thread.current[:reload] = true
-          Thread.exit
         when 't', 'backtrace', 'trace'
           if @gestalt.calls.empty?
             @formatador.display_line("[red]No methods were called, so no backtrace was captured.[/]")
@@ -114,7 +113,7 @@ module Shindo
     end
 
     def tests(description, tags = [], &block)
-      return if @exit
+      return if @exit || Thread.current[:reload]
 
       tags = [*tags]
       @tag_stack.push(tags)
@@ -142,7 +141,7 @@ module Shindo
       @befores.pop
       @tag_stack.pop
 
-      Thread.exit if @exit
+      Thread.exit if @exit || Thread.current[:reload]
     end
 
     def raises(error, description = "raises #{error.inspect}", &block)
@@ -161,7 +160,7 @@ module Shindo
     private
 
     def assertion(type, expectation, description, &block)
-      return if @exit
+      return if @exit || Thread.current[:reload]
       success = nil
       @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
       if block_given?
