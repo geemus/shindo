@@ -144,16 +144,16 @@ module Shindo
       Thread.exit if @exit || Thread.current[:reload]
     end
 
-    def raises(error, description = "raises #{error.inspect}", &block)
-      assertion(:raises, error, description, &block)
+    def raises(error, &block)
+      assertion(:raises, error, "raises #{error.inspect}", &block)
     end
 
-    def returns(value, description = "returns #{value.inspect}", &block)
-      assertion(:returns, value, description, &block)
+    def returns(value, &block)
+      assertion(:returns, value, "returns #{value.inspect}", &block)
     end
 
-    def test(description = nil, &block)
-      returns(true, description, &block)
+    def test(description = "returns true", &block)
+      assertion(:returns, true, description, &block)
     end
 
     private
