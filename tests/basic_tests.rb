@@ -6,25 +6,25 @@ Shindo.tests('basics') do
   tests('exception') do
     @output = bin(path('exception'))
     includes('- exception') { @output }
-    returns(1, 'status')    { $?.exitstatus }
+    returns(1)    { $?.exitstatus }
   end
 
   tests('failure') do
     @output = bin(path('failure'))
     includes('- failure') { @output }
-    returns(1, 'status')  { $?.exitstatus }
+    returns(1)  { $?.exitstatus }
   end
 
   tests('pending') do
     @output = bin(path('pending'))
     includes('# pending') { @output }
-    returns(0, 'status')  { $?.exitstatus }
+    returns(0)  { $?.exitstatus }
   end
 
   tests('success') do
     @output = bin(path('success'))
     includes('+ success') { @output }
-    returns(0, "status") { $?.exitstatus }
+    returns(0) { $?.exitstatus }
   end
 
 end
