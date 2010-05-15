@@ -2,16 +2,16 @@ Shindo.tests('tags') do
 
   tests('negative') do
     @output = bin("#{path('negative')} -negative")
-    returns(true, 'is tested')   { @output.include?('+ is tested') }
-    returns(true, 'is skipped')  { @output.include?('skipped (negative)') }
-    returns(true, 'status')      { $?.exitstatus == 0 }
+    includes('+ is tested')         { @output }
+    includes('skipped (negative)')  { @output }
+    returns(0, 'status')            { $?.exitstatus }
   end
 
   tests('positive') do
     @output = bin("#{path('positive')} +positive")
-    returns(true, 'is tested')   { @output.include?('+ is tested') }
-    returns(true, 'is skipped')  { @output.include?('skipped') }
-    returns(true, 'status')      { $?.exitstatus == 0 }
+    includes('+ is tested') { @output }
+    includes('skipped')     { @output }
+    returns(0, 'status')    { $?.exitstatus }
   end
 
 end

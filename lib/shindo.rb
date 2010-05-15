@@ -152,8 +152,7 @@ module Shindo
       assertion(:returns, value, description, &block)
     end
 
-    def test(description, &block)
-      @formatador.display_line("[yellow][WARN] test is deprecated, use returns(true)")
+    def test(description = nil, &block)
       returns(true, description, &block)
     end
 

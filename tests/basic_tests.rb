@@ -2,26 +2,26 @@ Shindo.tests('basics') do
 
   tests('exception') do
     @output = bin(path('exception'))
-    returns(true, 'output') { @output.include?('- exception') }
-    returns(true, 'status') { $?.exitstatus == 1 }
+    includes('- exception') { @output }
+    returns(1, 'status')    { $?.exitstatus }
   end
 
   tests('failure') do
     @output = bin(path('failure'))
-    returns(true, 'output') { @output.include?('- failure') }
-    returns(true, 'status') { $?.exitstatus == 1 }
+    includes('- failure') { @output }
+    returns(1, 'status')  { $?.exitstatus }
   end
 
   tests('pending') do
     @output = bin(path('pending'))
-    returns(true, 'output') { @output.include?('* pending') }
-    returns(true, 'status') { $?.exitstatus == 0 }
+    includes('* pending') { @output }
+    returns(0, 'status')  { $?.exitstatus }
   end
 
   tests('success') do
     @output = bin(path('success'))
-    returns(true, 'output') { @output.include?('+ success') }
-    returns(true, 'status') { $?.exitstatus == 0 }
+    includes('+ success') { @output }
+    returns(0, 'status') { $?.exitstatus }
   end
 
   tests('returns') do
