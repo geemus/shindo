@@ -145,20 +145,20 @@ module Shindo
     end
 
     def raises(error, &block)
-      assertion(:raises, error, "raises #{error.inspect}", &block)
+      assert(:raises, error, "raises #{error.inspect}", &block)
     end
 
     def returns(value, &block)
-      assertion(:returns, value, "returns #{value.inspect}", &block)
+      assert(:returns, value, "returns #{value.inspect}", &block)
     end
 
     def test(description = "returns true", &block)
-      assertion(:returns, true, description, &block)
+      assert(:returns, true, description, &block)
     end
 
     private
 
-    def assertion(type, expectation, description, &block)
+    def assert(type, expectation, description, &block)
       return if @exit || Thread.current[:reload]
       success = nil
       @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
