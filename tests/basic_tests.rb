@@ -17,14 +17,14 @@ Shindo.tests('basics') do
 
   tests('pending') do
     @output = bin(path('pending'))
-    includes('* pending') { @output }
+    includes('# pending') { @output }
     returns(0, 'status')  { $?.exitstatus }
   end
 
   tests('success') do
     @output = bin(path('success'))
     includes('+ success') { @output }
-    returns(0, 'status')  { $?.exitstatus }
+    returns(0, "status") { $?.exitstatus }
   end
 
 end

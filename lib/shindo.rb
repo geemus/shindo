@@ -192,7 +192,7 @@ module Shindo
         end
       else
         Thread.current[:totals][:pending] += 1
-        @formatador.display_line("[yellow]* #{description}[/]")
+        @formatador.display_line("[yellow]# #{description}[/]")
       end
     end
 
