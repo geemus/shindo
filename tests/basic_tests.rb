@@ -1,5 +1,8 @@
 Shindo.tests('basics') do
 
+  returns(false) { false }
+  raises(StandardError) { raise StandardError.new }
+
   tests('exception') do
     @output = bin(path('exception'))
     includes('- exception') { @output }
@@ -21,15 +24,7 @@ Shindo.tests('basics') do
   tests('success') do
     @output = bin(path('success'))
     includes('+ success') { @output }
-    returns(0, 'status') { $?.exitstatus }
-  end
-
-  tests('returns') do
-    returns(false) { false }
-  end
-
-  tests('raises') do
-    raises(StandardError) { raise StandardError.new }
+    returns(0, 'status')  { $?.exitstatus }
   end
 
 end
