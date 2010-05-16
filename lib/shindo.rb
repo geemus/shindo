@@ -46,6 +46,96 @@ module Shindo
       @befores.last.push(block)
     end
 
+    def tests(description, tags = [], &block)
+      return if @exit || Thread.current[:reload]
+
+      tags = [*tags]
+      @tag_stack.push(tags)
+      @befores.push([])
+      @afters.push([])
+
+      description ||= 'Shindo.tests'
+      description = "[bold]#{description}[normal]"
+      unless tags.empty?
+        description << " (#{tags.join(', ')})"
+      end
+
+      # if the test includes +tags and discludes -tags, evaluate it
+      if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
+          (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
+        @formatador.display_line(description)
+        if block_given?
+          @formatador.indent { instance_eval(&block) }
+        end
+      else
+        @formatador.display_line("[light_black]#{description}[/]")
+      end
+
+      @afters.pop
+      @befores.pop
+      @tag_stack.pop
+
+      Thread.exit if @exit || Thread.current[:reload]
+    end
+
+    def raises(error, &block)
+      assert(:raises, error, "raises #{error.inspect}", &block)
+    end
+
+    def returns(value, &block)
+      assert(:returns, value, "returns #{value.inspect}", &block)
+    end
+
+    def test(description = "returns true", &block)
+      assert(:returns, true, description, &block)
+    end
+
+    private
+
+    def assert(type, expectation, description, &block)
+      return if @exit || Thread.current[:reload]
+      success = nil
+      @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
+      if block_given?
+        begin
+          for before in @befores.flatten.compact
+            before.call
+          end
+          success = case type
+          when :raises
+            @gestalt.run(&block).is_a?(expectation)
+          when :returns
+            @gestalt.run(&block) == expectation
+          end
+          for after in @afters.flatten.compact
+            after.call
+          end
+        rescue => error
+          @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+        end
+        if success
+          success(description)
+        else
+          failure(description)
+        end
+      else
+        pending(description)
+      end
+    end
+
+    def failure(description)
+      Thread.current[:totals][:failed] += 1
+      @formatador.display_line("[red]- #{description}[/]")
+      if STDOUT.tty?
+        prompt(description, &block)
+      end
+    end
+
+    def pending(description)
+      Thread.current[:totals][:pending] += 1
+      @formatador.display_line("[yellow]# #{description}[/]")
+    end
+
     def prompt(description, &block)
       @formatador.display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
@@ -112,88 +202,9 @@ module Shindo
       end
     end
 
-    def tests(description, tags = [], &block)
-      return if @exit || Thread.current[:reload]
-
-      tags = [*tags]
-      @tag_stack.push(tags)
-      @befores.push([])
-      @afters.push([])
-
-      description ||= 'Shindo.tests'
-      description = "[bold]#{description}[normal]"
-      unless tags.empty?
-        description << " (#{tags.join(', ')})"
-      end
-
-      # if the test includes +tags and discludes -tags, evaluate it
-      if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
-          (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
-        @formatador.display_line(description)
-        if block_given?
-          @formatador.indent { instance_eval(&block) }
-        end
-      else
-        @formatador.display_line("[light_black]#{description}[/]")
-      end
-
-      @afters.pop
-      @befores.pop
-      @tag_stack.pop
-
-      Thread.exit if @exit || Thread.current[:reload]
-    end
-
-    def raises(error, &block)
-      assert(:raises, error, "raises #{error.inspect}", &block)
-    end
-
-    def returns(value, &block)
-      assert(:returns, value, "returns #{value.inspect}", &block)
-    end
-
-    def test(description = "returns true", &block)
-      assert(:returns, true, description, &block)
-    end
-
-    private
-
-    def assert(type, expectation, description, &block)
-      return if @exit || Thread.current[:reload]
-      success = nil
-      @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
-      if block_given?
-        begin
-          for before in @befores.flatten.compact
-            before.call
-          end
-          success = case type
-          when :raises
-            @gestalt.run(&block).is_a?(expectation)
-          when :returns
-            @gestalt.run(&block) == expectation
-          end
-          for after in @afters.flatten.compact
-            after.call
-          end
-        rescue => error
-          Thread.current[:totals][:failed] += 1
-          @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
-        end
-        if success
-          Thread.current[:totals][:succeeded] += 1
-          @formatador.display_line("[green]+ #{description}[/]")
-        else
-          Thread.current[:totals][:failed] += 1
-          @formatador.display_line("[red]- #{description}[/]")
-          if STDOUT.tty?
-            prompt(description, &block)
-          end
-        end
-      else
-        Thread.current[:totals][:pending] += 1
-        @formatador.display_line("[yellow]# #{description}[/]")
-      end
+    def success(description)
+      Thread.current[:totals][:succeeded] += 1
+      @formatador.display_line("[green]+ #{description}[/]")
     end
 
   end
