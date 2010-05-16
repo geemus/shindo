@@ -123,7 +123,7 @@ module Shindo
       end
     end
 
-    def failure(description)
+    def failure(description, &block)
       Thread.current[:totals][:failed] += 1
       @formatador.display_line("[red]- #{description}[/]")
       if STDOUT.tty?
@@ -131,7 +131,7 @@ module Shindo
       end
     end
 
-    def pending(description)
+    def pending(description, &block)
       Thread.current[:totals][:pending] += 1
       @formatador.display_line("[yellow]# #{description}[/]")
     end
@@ -202,7 +202,7 @@ module Shindo
       end
     end
 
-    def success(description)
+    def success(description, &block)
       Thread.current[:totals][:succeeded] += 1
       @formatador.display_line("[green]+ #{description}[/]")
     end
