@@ -101,11 +101,12 @@ module Shindo
           for before in @befores.flatten.compact
             before.call
           end
+          value = @gestalt.run(&block)
           success = case type
           when :raises
-            @gestalt.run(&block).is_a?(expectation)
+            value.is_a?(expectation)
           when :returns
-            @gestalt.run(&block) == expectation
+            value == expectation
           end
           for after in @afters.flatten.compact
             after.call
@@ -117,6 +118,10 @@ module Shindo
           success(description)
         else
           failure(description)
+          @formatador.indent { @formatador.display_line("[red]expected => #{expectation.inspect}, got => #{value.inspect}[/]") }
+          if STDOUT.tty?
+            prompt(description, &block)
+          end
         end
       else
         pending(description)
@@ -126,9 +131,6 @@ module Shindo
     def failure(description, &block)
       Thread.current[:totals][:failed] += 1
       @formatador.display_line("[red]- #{description}[/]")
-      if STDOUT.tty?
-        prompt(description, &block)
-      end
     end
 
     def pending(description, &block)
