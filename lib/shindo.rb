@@ -54,6 +54,7 @@ module Shindo
       @befores.push([])
       @afters.push([])
 
+      @description = nil
       description ||= 'Shindo.tests'
       description = "[bold]#{description}[normal]"
       unless tags.empty?
@@ -63,9 +64,11 @@ module Shindo
       # if the test includes +tags and discludes -tags, evaluate it
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
-        @formatador.display_line(description)
         if block_given?
+          @formatador.display_line(description)
           @formatador.indent { instance_eval(&block) }
+        else
+          @description = description
         end
       else
         @formatador.display_line("[light_black]#{description}[/]")
@@ -76,6 +79,7 @@ module Shindo
       @tag_stack.pop
 
       Thread.exit if @exit || Thread.current[:reload]
+      self
     end
 
     def raises(error, &block)
@@ -86,7 +90,7 @@ module Shindo
       assert(:returns, value, "returns #{value.inspect}", &block)
     end
 
-    def test(description = "returns true", &block)
+    def test(description = 'returns true', &block)
       assert(:returns, true, description, &block)
     end
 
@@ -94,6 +98,7 @@ module Shindo
 
     def assert(type, expectation, description, &block)
       return if @exit || Thread.current[:reload]
+      description = [@description, description].compact.join(' ')
       success = nil
       @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
       if block_given?
