@@ -19,8 +19,8 @@ Gem::Specification.new do |s|
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
-  s.summary     = "Ruby testing."
-  s.description = "Simple depth first ruby testing."
+  s.summary     = "Simple depth first Ruby testing."
+  s.description = "Work with your tests, not against them."
 
   ## List the primary authors. If there are a bunch of authors, it's probably
   ## better to set the email to an email list or something. If you don't have
