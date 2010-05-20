@@ -131,6 +131,7 @@ module Shindo
       else
         pending(description)
       end
+      success
     end
 
     def failure(description, &block)
