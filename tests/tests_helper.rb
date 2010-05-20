@@ -14,9 +14,11 @@ module Shindo
   class Tests
 
     def includes(expectation, description = "includes #{expectation.inspect}", &block)
-      value = instance_eval(&block)
-      @message = "expected #{value.inspect} to include #{expectation.inspect}"
-      value.include?(expectation)
+      test(description) do
+        value = instance_eval(&block)
+        @message = "expected #{value.inspect} to include #{expectation.inspect}"
+        value.include?(expectation)
+      end
     end
 
   end
