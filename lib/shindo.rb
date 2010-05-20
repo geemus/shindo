@@ -46,6 +46,15 @@ module Shindo
       @befores.last.push(block)
     end
 
+    def mismatch(expected, value)
+      @formatador.indent do
+        @formatador.display_lines([
+          "[red]expected => #{expected.inspect}[/]",
+          "[red]returned => #{value.inspect}[/]"
+        ])
+      end
+    end
+
     def tests(description, tags = [], &block)
       return if @exit || Thread.current[:reload]
 
@@ -123,7 +132,7 @@ module Shindo
           success(description)
         else
           failure(description)
-          @formatador.indent { @formatador.display_line("[red]expected => #{expectation.inspect}, got => #{value.inspect}[/]") }
+          mismatch(expectation, value)
           if STDOUT.tty?
             prompt(description, &block)
           end
