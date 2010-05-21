@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'shindo'
-  s.version           = '0.0.18'
-  s.date              = '2010-05-02'
+  s.version           = '0.1.0'
+  s.date              = '2010-05-21'
   s.rubyforge_project = 'shindo'
 
   ## Make sure your summary is short. The description may be as long
@@ -69,6 +69,7 @@ Gem::Specification.new do |s|
     lib/shindo/rake.rb
     shindo.gemspec
     tests/basic_tests.rb
+    tests/bin_tests.rb
     tests/data/exception
     tests/data/failure
     tests/data/negative
