@@ -100,7 +100,7 @@ module Shindo
       return if @exit || Thread.current[:reload]
       description = [@description, description].compact.join(' ')
       success = nil
-      @gestalt = Gestalt.new({'c-call' => true, 'formatador' => @formatador})
+      @gestalt = Gestalt.new({'formatador' => @formatador})
       if block_given?
         begin
           for before in @befores.flatten.compact
