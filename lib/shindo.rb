@@ -161,11 +161,15 @@ module Shindo
         when 'c', 'continue'
           continue = true
         when /^e .*/, /^eval .*/
-          value = eval(choice[2..-1], @gestalt.bindings.last)
-          if value.nil?
-            value = 'nil'
+          begin
+            value = eval(choice[2..-1], @gestalt.bindings.last)
+            if value.nil?
+              value = 'nil'
+            end
+            @formatador.display_line(value)
+          rescue => error
+            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
           end
-          @formatador.display_line(value)
         when 'i', 'interactive', 'irb'
           @formatador.display_line('Starting interactive session...')
           if @irb.nil?
