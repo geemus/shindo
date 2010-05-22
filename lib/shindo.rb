@@ -70,6 +70,11 @@ module Shindo
             @formatador.indent { instance_eval(&block) }
           rescue => error
             @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+            unless error.backtrace.empty?
+              @formatador.indent do
+                @formatador.display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
+              end
+            end
           end
         else
           @description = description
