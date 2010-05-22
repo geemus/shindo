@@ -65,8 +65,12 @@ module Shindo
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
         if block_given?
-          @formatador.display_line(description)
-          @formatador.indent { instance_eval(&block) }
+          begin
+            @formatador.display_line(description)
+            @formatador.indent { instance_eval(&block) }
+          rescue => error
+            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+          end
         else
           @description = description
         end
