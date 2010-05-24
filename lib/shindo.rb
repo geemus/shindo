@@ -47,7 +47,7 @@ module Shindo
     end
 
     def tests(description, tags = [], &block)
-      return if @exit || Thread.current[:reload]
+      return self if @exit || Thread.current[:reload]
 
       tags = [*tags]
       @tag_stack.push(tags)
