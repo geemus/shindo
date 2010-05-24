@@ -69,12 +69,7 @@ module Shindo
             @formatador.display_line(description)
             @formatador.indent { instance_eval(&block) }
           rescue => error
-            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
-            unless error.backtrace.empty?
-              @formatador.indent do
-                @formatador.display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
-              end
-            end
+            display_error(error)
           end
         else
           @description = description
@@ -126,20 +121,26 @@ module Shindo
             after.call
           end
         rescue => error
-          @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+          success = false
+          value = error
         end
         if success
           success(description)
         else
           failure(description)
-          @message ||= [
-            "expected => #{expectation.inspect}",
-            "returned => #{value.inspect}"
-          ]
-          @formatador.indent do
-            @formatador.display_lines([*@message].map {|message| "[red]#{message}[/]"})
+          case value
+          when Exception, Interrupt
+            display_error(value)
+          else
+            @message ||= [
+              "expected => #{expectation.inspect}",
+              "returned => #{value.inspect}"
+            ]
+            @formatador.indent do
+              @formatador.display_lines([*@message].map {|message| "[red]#{message}[/]"})
+            end
+            @message = nil
           end
-          @message = nil
           if STDOUT.tty?
             prompt(description, &block)
           end
@@ -148,6 +149,15 @@ module Shindo
         pending(description)
       end
       success
+    end
+
+    def display_error(error)
+      @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+      unless error.backtrace.empty?
+        @formatador.indent do
+          @formatador.display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
+        end
+      end
     end
 
     def failure(description, &block)
@@ -177,7 +187,7 @@ module Shindo
             end
             @formatador.display_line(value)
           rescue => error
-            @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+            display_error(error)
           end
         when 'i', 'interactive', 'irb'
           @formatador.display_line('Starting interactive session...')
