@@ -1,4 +1,16 @@
 #!/usr/bin/env ruby
+@interrupt = lambda do
+  formatador = Thread.current[:formatador] || Formatador
+  unless Thread.main[:exit]
+    formatador.display_line('Gracefully Exiting... (ctrl-c to force)')
+    Thread.main[:exit] = true
+  else
+    formatador.display_line('Exiting...')
+    Thread.exit
+  end
+end
+Kernel.trap('INT', @interrupt)
+
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo')
 
 helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
@@ -31,10 +43,14 @@ def run_in_thread(helpers, tests, tags)
   shindo = Thread.new {
     Thread.current[:tags] = tags
     for file in helpers
-      load(file)
+      unless Thread.main[:exit]
+        load(file)
+      end
     end
     for file in tests
-      load(file)
+      unless Thread.main[:exit]
+        load(file)
+      end
     end
   }
   shindo.join

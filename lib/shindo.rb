@@ -18,8 +18,8 @@ module Shindo
     def initialize(description, tags = [], &block)
       @afters     = []
       @befores    = []
-      @formatador = Formatador.new
       @tag_stack  = []
+      Thread.current[:formatador] = Formatador.new
       Thread.current[:reload] = false
       Thread.current[:tags] ||= []
       Thread.current[:totals] ||= { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
@@ -33,9 +33,9 @@ module Shindo
           @unless_tagged << tag[1..-1]
         end
       end
-      @formatador.display_line
+      Thread.current[:formatador].display_line
       tests(description, tags, &block)
-      @formatador.display_line
+      Thread.current[:formatador].display_line
     end
 
     def after(&block)
@@ -47,7 +47,7 @@ module Shindo
     end
 
     def tests(description, tags = [], &block)
-      return self if @exit || Thread.current[:reload]
+      return self if Thread.main[:exit] || Thread.current[:reload]
 
       tags = [*tags]
       @tag_stack.push(tags)
@@ -66,8 +66,8 @@ module Shindo
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
         if block_given?
           begin
-            @formatador.display_line(description)
-            @formatador.indent { instance_eval(&block) }
+            Thread.current[:formatador].display_line(description)
+            Thread.current[:formatador].indent { instance_eval(&block) }
           rescue => error
             display_error(error)
           end
@@ -75,14 +75,14 @@ module Shindo
           @description = description
         end
       else
-        @formatador.display_line("[light_black]#{description}[/]")
+        Thread.current[:formatador].display_line("[light_black]#{description}[/]")
       end
 
       @afters.pop
       @befores.pop
       @tag_stack.pop
 
-      Thread.exit if @exit || Thread.current[:reload]
+      Thread.exit if Thread.current[:exit] || Thread.current[:reload]
       self
     end
 
@@ -101,10 +101,10 @@ module Shindo
     private
 
     def assert(type, expectation, description, &block)
-      return if @exit || Thread.current[:reload]
+      return if Thread.main[:exit] || Thread.current[:reload]
       description = [@description, description].compact.join(' ')
       success = nil
-      @gestalt = Gestalt.new({'formatador' => @formatador})
+      @gestalt = Gestalt.new({'formatador' => Thread.current[:formatador]})
       if block_given?
         begin
           for before in @befores.flatten.compact
@@ -136,8 +136,8 @@ module Shindo
               "expected => #{expectation.inspect}",
               "returned => #{value.inspect}"
             ]
-            @formatador.indent do
-              @formatador.display_lines([*@message].map {|message| "[red]#{message}[/]"})
+            Thread.current[:formatador].indent do
+              Thread.current[:formatador].display_lines([*@message].map {|message| "[red]#{message}[/]"})
             end
             @message = nil
           end
@@ -152,30 +152,31 @@ module Shindo
     end
 
     def display_error(error)
-      @formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+      Thread.current[:formatador].display_line("[red]#{error.message} (#{error.class})[/]")
       unless error.backtrace.empty?
-        @formatador.indent do
-          @formatador.display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
+        Thread.current[:formatador].indent do
+          Thread.current[:formatador].display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
         end
       end
     end
 
     def failure(description, &block)
       Thread.current[:totals][:failed] += 1
-      @formatador.display_line("[red]- #{description}[/]")
+      Thread.current[:formatador].display_line("[red]- #{description}[/]")
     end
 
     def pending(description, &block)
       Thread.current[:totals][:pending] += 1
-      @formatador.display_line("[yellow]# #{description}[/]")
+      Thread.current[:formatador].display_line("[yellow]# #{description}[/]")
     end
 
     def prompt(description, &block)
-      @formatador.display("Action? [c,e,i,q,r,t,?]? ")
+      return if Thread.main[:exit] || Thread.current[:reload]
+      Thread.current[:formatador].display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
       continue = false
-      @formatador.display_line
-      @formatador.indent do
+      Thread.current[:formatador].display_line
+      Thread.current[:formatador].indent do
         case choice
         when 'c', 'continue'
           continue = true
@@ -185,12 +186,12 @@ module Shindo
             if value.nil?
               value = 'nil'
             end
-            @formatador.display_line(value)
+            Thread.current[:formatador].display_line(value)
           rescue => error
             display_error(error)
           end
         when 'i', 'interactive', 'irb'
-          @formatador.display_line('Starting interactive session...')
+          Thread.current[:formatador].display_line('Starting interactive session...')
           if @irb.nil?
             require 'irb'
             ARGV.clear # Avoid passing args to IRB
@@ -200,7 +201,7 @@ module Shindo
             IRB.conf[:PROMPT][:SHINDO] = {}
           end
           for key, value in IRB.conf[:PROMPT][:SIMPLE]
-            IRB.conf[:PROMPT][:SHINDO][key] = "#{@formatador.indentation}#{value}"
+            IRB.conf[:PROMPT][:SHINDO][key] = "#{Thread.current[:formatador].indentation}#{value}"
           end
           @irb.context.prompt_mode = :SHINDO
           @irb.context.workspace = IRB::WorkSpace.new(@gestalt.bindings.last)
@@ -209,19 +210,19 @@ module Shindo
           rescue SystemExit
           end
         when 'q', 'quit', 'exit'
-          @formatador.display_line("Exiting...")
-          @exit = true
+          Thread.current[:formatador].display_line("Exiting...")
+          Thread.current[:exit] = true
         when 'r', 'reload'
-          @formatador.display_line("Reloading...")
+          Thread.current[:formatador].display_line("Reloading...")
           Thread.current[:reload] = true
         when 't', 'backtrace', 'trace'
           if @gestalt.calls.empty?
-            @formatador.display_line("[red]No methods were called, so no backtrace was captured.[/]")
+            Thread.current[:formatador].display_line("[red]No methods were called, so no backtrace was captured.[/]")
           else
             @gestalt.display_calls
           end
         when '?', 'help'
-          @formatador.display_lines([
+          Thread.current[:formatador].display_lines([
             'c - ignore this error and continue',
             'i - interactive mode',
             'q - quit Shindo',
@@ -230,19 +231,19 @@ module Shindo
             '? - display help'
           ])
         else
-          @formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
+          Thread.current[:formatador].display_line("[red]#{choice} is not a valid choice, please try again.[/]")
         end
-        @formatador.display_line
+        Thread.current[:formatador].display_line
       end
-      unless continue || @exit
-        @formatador.display_line("[red]- #{description}[/]")
+      unless continue || Thread.current[:exit]
+        Thread.current[:formatador].display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
     end
 
     def success(description, &block)
       Thread.current[:totals][:succeeded] += 1
-      @formatador.display_line("[green]+ #{description}[/]")
+      Thread.current[:formatador].display_line("[green]+ #{description}[/]")
     end
 
   end
