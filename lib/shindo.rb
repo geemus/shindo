@@ -106,19 +106,16 @@ module Shindo
     def assert(type, expectation, description, &block)
       return if Thread.main[:exit] || Thread.current[:reload]
       description = [@description, description].compact.join(' ')
-      success = nil
-      @gestalt = Gestalt.new({'formatador' => Thread.current[:formatador]})
       if block_given?
         begin
           for before in @befores.flatten.compact
             before.call
           end
-          value = @gestalt.run(&block)
-          success = case type
+          value, success = case type
           when :raises
-            value.is_a?(expectation)
+            raises?(expectation, &block)
           when :returns
-            value == expectation
+            returns?(expectation, &block)
           end
           for after in @afters.flatten.compact
             after.call
@@ -247,6 +244,16 @@ module Shindo
         Thread.current[:formatador].display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
+    end
+
+    def raises?(expectation, &block)
+      @gestalt = Gestalt.new({'formatador' => Thread.current[:formatador]})
+      [value = @gestalt.run(&block), value.is_a?(expectation)]
+    end
+
+    def returns?(expectation, &block)
+      @gestalt = Gestalt.new({'formatador' => Thread.current[:formatador]})
+      [value = @gestalt.run(&block), value == expectation]
     end
 
   end
