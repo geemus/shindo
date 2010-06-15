@@ -128,9 +128,9 @@ module Shindo
           value = error
         end
         if success
-          success(description)
+          display_success(description)
         else
-          failure(description)
+          display_failure(description)
           case value
           when Exception, Interrupt
             display_error(value)
@@ -149,7 +149,7 @@ module Shindo
           end
         end
       else
-        pending(description)
+        display_pending(description)
       end
       success
     end
@@ -163,14 +163,19 @@ module Shindo
       end
     end
 
-    def failure(description, &block)
+    def display_failure(description)
       Thread.current[:totals][:failed] += 1
       Thread.current[:formatador].display_line("[red]- #{description}[/]")
     end
 
-    def pending(description, &block)
+    def display_pending(description)
       Thread.current[:totals][:pending] += 1
       Thread.current[:formatador].display_line("[yellow]# #{description}[/]")
+    end
+
+    def display_success(description)
+      Thread.current[:totals][:succeeded] += 1
+      Thread.current[:formatador].display_line("[green]+ #{description}[/]")
     end
 
     def prompt(description, &block)
@@ -242,11 +247,6 @@ module Shindo
         Thread.current[:formatador].display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
-    end
-
-    def success(description, &block)
-      Thread.current[:totals][:succeeded] += 1
-      Thread.current[:formatador].display_line("[green]+ #{description}[/]")
     end
 
   end
