@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+@thread_locals = { :interactive => false }
+require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'taciturn')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'bin')

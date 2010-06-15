@@ -1,6 +1,8 @@
 module Shindo
   class Tests
 
+    private
+
     def display_description(description)
       Thread.current[:formatador].display_line(description)
     end

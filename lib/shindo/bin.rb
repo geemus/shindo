@@ -45,6 +45,7 @@ def run_in_thread(helpers, tests, thread_locals)
     end
     for file in helpers
       unless Thread.main[:exit]
+        Thread.current[:file] = file
         load(file)
       end
     end

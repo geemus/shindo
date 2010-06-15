@@ -36,7 +36,6 @@ module Shindo
       end
       Thread.current[:formatador].display_line
       tests(description, tags, &block)
-      Thread.current[:formatador].display_line
     end
 
     def after(&block)
