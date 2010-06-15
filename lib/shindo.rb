@@ -18,7 +18,8 @@ module Shindo
     def initialize(description, tags = [], &block)
       @afters     = []
       @befores    = []
-      @tag_stack  = []
+      @description_stack  = []
+      @tag_stack          = []
       Thread.current[:formatador] = Formatador.new
       Thread.current[:reload] = false
       Thread.current[:tags] ||= []
@@ -60,6 +61,7 @@ module Shindo
       unless tags.empty?
         description << " (#{tags.join(', ')})"
       end
+      @description_stack.push(description)
 
       # if the test includes +tags and discludes -tags, evaluate it
       if (@if_tagged.empty? || !(@if_tagged & @tag_stack.flatten).empty?) &&
@@ -78,6 +80,7 @@ module Shindo
         Thread.current[:formatador].display_line("[light_black]#{description}[/]")
       end
 
+      @description_stack.pop
       @afters.pop
       @befores.pop
       @tag_stack.pop
