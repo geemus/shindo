@@ -39,10 +39,11 @@ unless tests
 end
 
 @started_at = Time.now
-def run_in_thread(helpers, tests, tags)
+def run_in_thread(helpers, tests, thread_locals)
   shindo = Thread.new {
-    Thread.current[:interactive] = true
-    Thread.current[:tags] = tags
+    for key, value in thread_locals
+      Thread.current[key] = value
+    end
     for file in helpers
       unless Thread.main[:exit]
         load(file)
@@ -56,12 +57,12 @@ def run_in_thread(helpers, tests, tags)
   }
   shindo.join
   if shindo[:reload]
-    run_in_thread(helpers, tests, tags)
+    run_in_thread(helpers, tests, thread_locals)
   else
     @totals = shindo[:totals]
   end
 end
-run_in_thread(helpers, tests, tags)
+run_in_thread(helpers, tests, {:interactive => true, :tags => tags})
 
 @totals   ||= { :failed => 0, :pending => 0, :succeeded => 0 }
 @success  = @totals[:failed] == 0
