@@ -68,7 +68,7 @@ module Shindo
           (@unless_tagged.empty? || (@unless_tagged & @tag_stack.flatten).empty?)
         if block_given?
           begin
-            Thread.current[:formatador].display_line(description)
+            display_description(description)
             Thread.current[:formatador].indent { instance_eval(&block) }
           rescue => error
             display_error(error)
@@ -77,7 +77,7 @@ module Shindo
           @description = description
         end
       else
-        Thread.current[:formatador].display_line("[light_black]#{description}[/]")
+        display_description("[light_black]#{description}[/]")
       end
 
       @description_stack.pop
@@ -149,6 +149,10 @@ module Shindo
         display_pending(description)
       end
       success
+    end
+
+    def display_description(description)
+      Thread.current[:formatador].display_line(description)
     end
 
     def display_error(error)
