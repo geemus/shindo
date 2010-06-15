@@ -82,7 +82,7 @@ module Shindo
       @befores.pop
       @tag_stack.pop
 
-      Thread.exit if Thread.current[:exit] || Thread.current[:reload]
+      Thread.exit if Thread.main[:exit] || Thread.current[:reload]
       self
     end
 
@@ -211,7 +211,7 @@ module Shindo
           end
         when 'q', 'quit', 'exit'
           Thread.current[:formatador].display_line("Exiting...")
-          Thread.current[:exit] = true
+          Thread.main[:exit] = true
         when 'r', 'reload'
           Thread.current[:formatador].display_line("Reloading...")
           Thread.current[:reload] = true
@@ -235,7 +235,7 @@ module Shindo
         end
         Thread.current[:formatador].display_line
       end
-      unless continue || Thread.current[:exit]
+      unless continue || Thread.main[:exit]
         Thread.current[:formatador].display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
