@@ -41,6 +41,7 @@ end
 @started_at = Time.now
 def run_in_thread(helpers, tests, tags)
   shindo = Thread.new {
+    Thread.current[:interactive] = true
     Thread.current[:tags] = tags
     for file in helpers
       unless Thread.main[:exit]

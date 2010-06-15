@@ -141,7 +141,7 @@ module Shindo
             end
             @message = nil
           end
-          if STDOUT.tty?
+          if Thread.current[:interactive] && STDOUT.tty?
             prompt(description, &block)
           end
         end
