@@ -1,2 +1,3 @@
 #!/usr/bin/env ruby
+@thread_locals = { :interactive => true }
 require File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'bin')

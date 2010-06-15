@@ -61,7 +61,7 @@ def run_in_thread(helpers, tests, thread_locals)
     @totals = shindo[:totals]
   end
 end
-run_in_thread(helpers, tests, {:interactive => true, :tags => tags})
+run_in_thread(helpers, tests, @thread_locals.merge({:tags => tags}))
 
 @totals   ||= { :failed => 0, :pending => 0, :succeeded => 0 }
 @success  = @totals[:failed] == 0
