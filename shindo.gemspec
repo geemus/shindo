@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   # s.extensions = %w[ext/extconf.rb]
 
   ## If your gem includes any executables, list them here.
-  s.executables = ["shindo"]
+  s.executables = ['shindo', 'shindont']
   s.default_executable = 'shindo'
 
   ## Specify any RDoc options here. You'll want to add your README and
