@@ -63,6 +63,10 @@ Or combine to run everything with a foo tag, but no bar tag
 
   shindo some_test_directory +foo -bar
 
+If you are running in a non-interactive mode, or one where speed matters (i.e. continuous integration), you can run shindo with (n)o (t)race and much quieter output. It takes all the same arguments, but uses the shindont bin file.
+
+  shindont something_tests.rb
+
 == Command line tools
 
 When tests fail you'll get lots of options to help you debug the problem, just enter '?' at the prompt to see your options.
