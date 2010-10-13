@@ -5,7 +5,7 @@ require 'gestalt'
 module Shindo
 
   unless const_defined?(:VERSION)
-    VERSION = '0.1.6'
+    VERSION = '0.1.7'
   end
 
   def self.tests(description = nil, tags = [], &block)
