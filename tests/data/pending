@@ -1,3 +1,4 @@
 Shindo.tests do
-  test('pending')
+  test('implicit pending')
+  test('explicit pending') { pending }
 end

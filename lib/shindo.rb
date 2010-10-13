@@ -46,6 +46,13 @@ module Shindo
       @befores.last.push(block)
     end
 
+    def pending
+      catch(:pending) do
+        @pending = true
+      end
+      throw(:pending)
+    end
+
     def tests(description, tags = [], &block)
       return self if Thread.main[:exit] || Thread.current[:reload]
 
@@ -123,7 +130,10 @@ module Shindo
           success = false
           value = error
         end
-        if success
+        if @pending
+          display_pending(description)
+          @pending = false
+        elsif success
           display_success(description)
         else
           display_failure(description)

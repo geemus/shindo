@@ -14,7 +14,8 @@ Shindo.tests('bin') do
 
   tests('pending') do
     @output = bin(path('pending'))
-    includes('# pending')             { @output }
+    includes('# implicit pending') { @output }
+    includes('# explicit pending') { @output }
     tests('$?.exitstatus').returns(0) { $?.exitstatus }
   end
 
