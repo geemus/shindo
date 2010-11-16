@@ -1,4 +1,4 @@
-Shindo.tests('bin') do
+Shindo.tests('tag') do
 
   tests("negative -negative") do
     @output = bin("#{path('negative')} -negative")

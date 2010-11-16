@@ -12,9 +12,10 @@ module Shindo
     end
 
     def display_description(description)
-      unless @indented
-        print '  '
-        @indented = true
+      unless @described
+        Thread.current[:formatador].display(description)
+        print ' '
+        @described = true
       end
     end
 
