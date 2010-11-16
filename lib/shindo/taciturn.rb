@@ -3,30 +3,30 @@ module Shindo
 
     private
 
-    def display_description_stack(description_stack = @description_stack, formatador = Formatador.new)
-      return if description_stack.empty?
-      formatador.indent do
-        formatador.display_line(description_stack.pop)
-        display_description_stack(description_stack, formatador)
+    def display_description_stack
+      return if @description_stack.empty?
+      Thread.current[:formatador].indent do
+        Thread.current[:formatador].display_line(@description_stack.pop)
+        display_description_stack
       end
     end
 
     def display_description(description)
       unless @described
-        Thread.current[:formatador].display(description)
+        Thread.current[:formatador].display(Thread.current[:file])
         print ' '
         @described = true
       end
     end
 
     def display_error(error)
-      Thread.current[:formatador].display_line
-      Thread.current[:formatador].display_line(Thread.current[:file])
       display_description_stack
-      Thread.current[:formatador].display_line("[red]#{error.message} (#{error.class})[/]")
-      unless error.backtrace.empty?
-        Thread.current[:formatador].indent do
-          Thread.current[:formatador].display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
+      Thread.current[:formatador].indent do
+        Thread.current[:formatador].display_line("[red]#{error.message} (#{error.class})[/]")
+        unless error.backtrace.empty?
+          Thread.current[:formatador].indent do
+            Thread.current[:formatador].display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
+          end
         end
       end
     end
@@ -34,7 +34,6 @@ module Shindo
     def display_failure(description)
       Thread.current[:totals][:failed] += 1
       Thread.current[:formatador].display_line
-      Thread.current[:formatador].display_line(Thread.current[:file])
       display_description_stack
       Thread.current[:formatador].display_line("[red]- #{description}[/]")
     end
