@@ -1,2 +1,3 @@
-gem 'formatador', '>=0.0.14'
-gem 'gestalt', '>=0.0.11'
+source "http://rubygems.org"
+
+gemspec

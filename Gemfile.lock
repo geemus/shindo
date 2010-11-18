@@ -1,18 +1,21 @@
---- 
-dependencies: 
-  formatador: 
-    group: 
-    - :default
-    version: ">= 0.0.14"
-  gestalt: 
-    group: 
-    - :default
-    version: ">= 0.0.11"
-specs: 
-- formatador: 
-    version: 0.0.14
-- gestalt: 
-    version: 0.0.11
-hash: 5c2e77551db0a4772439a57b49e0ecc967e4dfe3
-sources: []
+PATH
+  remote: .
+  specs:
+    shindo (0.1.9)
+      formatador (>= 0.0.16)
+      gestalt (>= 0.0.11)
 
+GEM
+  remote: http://rubygems.org/
+  specs:
+    formatador (0.0.16)
+    gestalt (0.0.11)
+      formatador (>= 0.0.12)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  formatador (>= 0.0.16)
+  gestalt (>= 0.0.11)
+  shindo!
