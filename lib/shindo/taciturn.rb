@@ -4,10 +4,10 @@ module Shindo
     private
 
     def display_description_stack
-      return if @description_stack.empty?
-      Thread.current[:formatador].indent do
-        Thread.current[:formatador].display_line(@description_stack.pop)
-        display_description_stack
+      Formatador.indent do
+        @description_stack.length.times do
+          Formatador.display_line(@description_stack.pop)
+        end
       end
     end
 
@@ -20,22 +20,21 @@ module Shindo
     end
 
     def display_error(error)
+      Formatador.display_lines(['', Thread.current[:file]])
       display_description_stack
-      Thread.current[:formatador].indent do
-        Thread.current[:formatador].display_line("[red]#{error.message} (#{error.class})[/]")
-        unless error.backtrace.empty?
-          Thread.current[:formatador].indent do
-            Thread.current[:formatador].display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
-          end
+      Formatador.display_line("[red]#{error.message} (#{error.class})[/]")
+      unless error.backtrace.empty?
+        Formatador.indent do
+          Formatador.display_lines(error.backtrace.map {|line| "[red]#{line}[/]"})
         end
       end
     end
 
     def display_failure(description)
       Thread.current[:totals][:failed] += 1
-      Thread.current[:formatador].display_line
+      Formatador.display_lines(['', Thread.current[:file]])
       display_description_stack
-      Thread.current[:formatador].display_line("[red]- #{description}[/]")
+      Formatador.display_line("[red]- #{description}[/]")
     end
 
     def display_pending(description)

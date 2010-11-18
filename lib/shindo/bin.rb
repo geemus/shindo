@@ -1,12 +1,11 @@
 require File.join(File.dirname(__FILE__), '..', 'shindo')
 
 @interrupt = lambda do
-  formatador = Thread.current[:formatador] || Formatador
   unless Thread.main[:exit]
-    formatador.display_line('Gracefully Exiting... (ctrl-c to force)')
+    Formatador.display_line('Gracefully Exiting... (ctrl-c to force)')
     Thread.main[:exit] = true
   else
-    formatador.display_line('Exiting...')
+    Formatador.display_line('Exiting...')
     Thread.exit
   end
 end
@@ -66,15 +65,13 @@ run_in_thread(helpers, tests, @thread_locals.merge({:tags => tags}))
 
 @totals   ||= { :failed => 0, :pending => 0, :succeeded => 0 }
 @success  = @totals[:failed] == 0
-lines = []
-lines << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
-lines << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
-lines << "[green]#{@totals[:succeeded]} succeeded[/]"
-lines = lines[0...-2].join(', ') << ' and ' << lines[-1] if lines.length > 3
-lines << "in [bold]#{Time.now - @started_at}[/] seconds"
-Formatador.display_line
-Formatador.display_line(lines.join(' '))
-Formatador.display_line
+status = []
+status << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
+status << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
+status << "[green]#{@totals[:succeeded]} succeeded[/]"
+status = status[0...-2].join(', ') << ' and ' << status[-1] if status.length > 3
+status << "in [bold]#{Time.now - @started_at}[/] seconds"
+Formatador.display_lines(['', status.join(' '), ''])
 
 if @success
   Kernel.exit(0)

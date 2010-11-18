@@ -20,7 +20,6 @@ module Shindo
       @befores    = []
       @description_stack  = []
       @tag_stack          = []
-      Thread.current[:formatador] = Formatador.new
       Thread.current[:reload] = false
       Thread.current[:tags] ||= []
       Thread.current[:totals] ||= { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
@@ -34,7 +33,7 @@ module Shindo
           @unless_tagged << tag[1..-1]
         end
       end
-      Thread.current[:formatador].display_line
+      Formatador.display_line
       tests(description, tags, &block)
     end
 
@@ -75,7 +74,7 @@ module Shindo
         if block_given?
           begin
             display_description(description)
-            Thread.current[:formatador].indent { instance_eval(&block) }
+            Formatador.indent { instance_eval(&block) }
           rescue => error
             display_error(error)
           end
@@ -145,8 +144,8 @@ module Shindo
               "expected => #{expectation.inspect}",
               "returned => #{value.inspect}"
             ]
-            Thread.current[:formatador].indent do
-              Thread.current[:formatador].display_lines([*@message].map {|message| "[red]#{message}[/]"})
+            Formatador.indent do
+              Formatador.display_lines([*@message].map {|message| "[red]#{message}[/]"})
             end
             @message = nil
           end
@@ -162,11 +161,11 @@ module Shindo
 
     def prompt(description, &block)
       return if Thread.main[:exit] || Thread.current[:reload]
-      Thread.current[:formatador].display("Action? [c,e,i,q,r,t,?]? ")
+      Formatador.display("Action? [c,e,i,q,r,t,?]? ")
       choice = STDIN.gets.strip
       continue = false
-      Thread.current[:formatador].display_line
-      Thread.current[:formatador].indent do
+      Formatador.display_line
+      Formatador.indent do
         case choice
         when 'c', 'continue'
           continue = true
@@ -176,12 +175,12 @@ module Shindo
             if value.nil?
               value = 'nil'
             end
-            Thread.current[:formatador].display_line(value)
+            Formatador.display_line(value)
           rescue => error
             display_error(error)
           end
         when 'i', 'interactive', 'irb'
-          Thread.current[:formatador].display_line('Starting interactive session...')
+          Formatador.display_line('Starting interactive session...')
           if @irb.nil?
             require 'irb'
             ARGV.clear # Avoid passing args to IRB
@@ -191,7 +190,7 @@ module Shindo
             IRB.conf[:PROMPT][:SHINDO] = {}
           end
           for key, value in IRB.conf[:PROMPT][:SIMPLE]
-            IRB.conf[:PROMPT][:SHINDO][key] = "#{Thread.current[:formatador].indentation}#{value}"
+            IRB.conf[:PROMPT][:SHINDO][key] = "#{Formatador.indentation}#{value}"
           end
           @irb.context.prompt_mode = :SHINDO
           @irb.context.workspace = IRB::WorkSpace.new(@gestalt.bindings.last)
@@ -200,19 +199,19 @@ module Shindo
           rescue SystemExit
           end
         when 'q', 'quit', 'exit'
-          Thread.current[:formatador].display_line("Exiting...")
+          Formatador.display_line("Exiting...")
           Thread.main[:exit] = true
         when 'r', 'reload'
-          Thread.current[:formatador].display_line("Reloading...")
+          Formatador.display_line("Reloading...")
           Thread.current[:reload] = true
         when 't', 'backtrace', 'trace'
           if @gestalt.calls.empty?
-            Thread.current[:formatador].display_line("[red]No methods were called, so no backtrace was captured.[/]")
+            Formatador.display_line("[red]No methods were called, so no backtrace was captured.[/]")
           else
             @gestalt.display_calls
           end
         when '?', 'help'
-          Thread.current[:formatador].display_lines([
+          Formatador.display_lines([
             'c - ignore this error and continue',
             'i - interactive mode',
             'q - quit Shindo',
@@ -221,12 +220,12 @@ module Shindo
             '? - display help'
           ])
         else
-          Thread.current[:formatador].display_line("[red]#{choice} is not a valid choice, please try again.[/]")
+          Formatador.display_line("[red]#{choice} is not a valid choice, please try again.[/]")
         end
-        Thread.current[:formatador].display_line
+        Formatador.display_line
       end
       unless continue || Thread.main[:exit]
-        Thread.current[:formatador].display_line("[red]- #{description}[/]")
+        Formatador.display_line("[red]- #{description}[/]")
         prompt(description, &block)
       end
     end
