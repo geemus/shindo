@@ -13,7 +13,7 @@ module Shindo
 
     def display_description(description)
       unless @described
-        Thread.current[:formatador].display(Thread.current[:file])
+        Thread.current[:formatador].display(@description_stack.first)
         print ' '
         @described = true
       end
