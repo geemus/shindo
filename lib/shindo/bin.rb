@@ -11,7 +11,7 @@ require File.join(File.dirname(__FILE__), '..', 'shindo')
 end
 Kernel.trap('INT', @interrupt)
 
-helpers = Dir.glob(File.join(Dir.pwd, 'tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
+helpers = Dir.glob(File.join('tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
 tags = []
 for argument in ARGV
   if argument.match(/^[\+\-]/)
