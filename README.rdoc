@@ -18,28 +18,71 @@ Returns takes what you expect and checks a block to see if the return value matc
 Raises takes what error you expect and checks to see if the block will raise it:
 
   Shindo.tests do
-    raises(StandardError) { StandardError.new }
+    raises(StandardError) { raise StandardError.new }
   end
+
+For one off simple tests like this you can also chain the calls like this:
+
+  Shindo.tests('raises').raises(StandardError) { raise StandardError.new }
 
 You can also override the default descriptions:
 
   Shindo.tests('foo/bar') do
     returns('foo', 'returns foo when bar') { 'foo' }
-    returns('bar', 'returns bar when qux') { 'bar' }
+    raises(StandardError, 'raises StandardError when baz') { raise StandardError }
+  end
+
+Or nest things inside tests blocks:
+  Shindo.tests do
+    tests('returns') do
+      returns('foo', 'returns foo when bar') { 'foo' }
+      returns('bar', 'returns bar when baz') { 'bar' }
+    end
+    tests('raises') do
+      raises(StandardError, 'raises StandardError when baz') { raise StandardError }
+      raises(StandardError, 'raises StandardError when qux') { raise StandardError }
+    end
   end
 
 Then, if you want to get real fancy you can also tag your tests, to help narrow down which ones to run
 
   Shindo.tests('tests for foo', 'foo') do
-      test('foo') { true }
+    test('foo') { true }
   end
 
   Shindo.tests('tests for bar', 'bar') do
-      test('bar') { true }
-    end
+    test('bar') { true }
   end
 
 Note: you'll have to supply a non-default description first, and then follow up with tags.
+
+== Setup and Teardown
+
+Tests get evaluated in the file just like you see it so you can add setup and teardown easily:
+
+  Shindo.tests do
+    foo = 'bar' # setup
+    tests('foo').returns('bar') { foo }
+
+    foo = 'baz' # cleanup after last
+    tests('foo').returns('baz') { foo }
+
+    foo = nil # teardown
+  end
+
+That can get pretty tedious if it needs to happen before or after every single test though, so there are helpers:
+
+  Shindo.tests do
+    before do
+      @object = Object.new
+    end
+
+    after do
+      @object = nil
+    end
+
+    tests('@object.class').returns(Object) { @object.class }
+  end
 
 == Running tests
 
