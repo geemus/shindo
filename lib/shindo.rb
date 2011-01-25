@@ -93,11 +93,11 @@ module Shindo
       self
     end
 
-    def raises(error, &block)
-      assert(:raises, error, "raises #{error.inspect}", &block)
+    def raises(error, description = "raises #{error.inspect}", &block)
+      assert(:raises, error, description, &block)
     end
 
-    def returns(expectation, description="returns #{expectation.inspect}", &block)
+    def returns(expectation, description = "returns #{expectation.inspect}", &block)
       assert(:returns, expectation, description, &block)
     end
 
