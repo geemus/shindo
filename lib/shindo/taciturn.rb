@@ -47,18 +47,5 @@ module Shindo
       print Formatador.parse("[green]+[/]")
     end
 
-    def raises?(expectation, &block)
-      value = begin
-        instance_eval(&block)
-      rescue => error
-        error
-      end
-      [value, value.is_a?(expectation)]
-    end
-
-    def returns?(expectation, &block)
-      [value = instance_eval(&block), value == expectation]
-    end
-
   end
 end

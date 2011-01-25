@@ -1,21 +1,17 @@
 PATH
   remote: .
   specs:
-    shindo (0.1.9)
+    shindo (0.1.12)
       formatador (>= 0.0.16)
-      gestalt (>= 0.0.11)
 
 GEM
   remote: http://rubygems.org/
   specs:
     formatador (0.0.16)
-    gestalt (0.0.11)
-      formatador (>= 0.0.12)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   formatador (>= 0.0.16)
-  gestalt (>= 0.0.11)
   shindo!

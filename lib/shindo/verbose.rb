@@ -31,15 +31,5 @@ module Shindo
       Formatador.display_line("[green]+ #{description}[/]")
     end
 
-    def raises?(expectation, &block)
-      @gestalt = Gestalt.new({'formatador' => Formatador})
-      [value = @gestalt.run(&block), value.is_a?(expectation)]
-    end
-
-    def returns?(expectation, &block)
-      @gestalt = Gestalt.new({'formatador' => Formatador})
-      [value = @gestalt.run(&block), value == expectation]
-    end
-
   end
 end

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'formatador'
-require 'gestalt'
 
 module Shindo
 
@@ -118,9 +117,14 @@ module Shindo
           end
           value, success = case type
           when :raises
-            raises?(expectation, &block)
+            value = begin
+              instance_eval(&block)
+            rescue => error
+              error
+            end
+            [value, value.is_a?(expectation)]
           when :returns
-            returns?(expectation, &block)
+            [value = instance_eval(&block), value == expectation]
           end
           for after in @afters.flatten.compact
             after.call
@@ -161,7 +165,7 @@ module Shindo
 
     def prompt(description, &block)
       return if Thread.main[:exit] || Thread.current[:reload]
-      Formatador.display("Action? [c,e,i,q,r,t,?]? ")
+      Formatador.display("Action? [c,q,r,?]? ")
       choice = STDIN.gets.strip
       continue = false
       Formatador.display_line
@@ -169,54 +173,17 @@ module Shindo
         case choice
         when 'c', 'continue'
           continue = true
-        when /^e .*/, /^eval .*/
-          begin
-            value = eval(choice[2..-1], @gestalt.bindings.last)
-            if value.nil?
-              value = 'nil'
-            end
-            Formatador.display_line(value)
-          rescue => error
-            display_error(error)
-          end
-        when 'i', 'interactive', 'irb'
-          Formatador.display_line('Starting interactive session...')
-          if @irb.nil?
-            require 'irb'
-            ARGV.clear # Avoid passing args to IRB
-            IRB.setup(nil)
-            @irb = IRB::Irb.new(nil)
-            IRB.conf[:MAIN_CONTEXT] = @irb.context
-            IRB.conf[:PROMPT][:SHINDO] = {}
-          end
-          for key, value in IRB.conf[:PROMPT][:SIMPLE]
-            IRB.conf[:PROMPT][:SHINDO][key] = "#{Formatador.indentation}#{value}"
-          end
-          @irb.context.prompt_mode = :SHINDO
-          @irb.context.workspace = IRB::WorkSpace.new(@gestalt.bindings.last)
-          begin
-            @irb.eval_input
-          rescue SystemExit
-          end
         when 'q', 'quit', 'exit'
           Formatador.display_line("Exiting...")
           Thread.main[:exit] = true
         when 'r', 'reload'
           Formatador.display_line("Reloading...")
           Thread.current[:reload] = true
-        when 't', 'backtrace', 'trace'
-          if @gestalt.calls.empty?
-            Formatador.display_line("[red]No methods were called, so no backtrace was captured.[/]")
-          else
-            @gestalt.display_calls
-          end
         when '?', 'help'
           Formatador.display_lines([
             'c - ignore this error and continue',
-            'i - interactive mode',
             'q - quit Shindo',
             'r - reload and run the tests again',
-            't - display backtrace',
             '? - display help'
           ])
         else
