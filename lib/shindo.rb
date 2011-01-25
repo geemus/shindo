@@ -97,8 +97,8 @@ module Shindo
       assert(:raises, error, "raises #{error.inspect}", &block)
     end
 
-    def returns(expectation, &block)
-      assert(:returns, expectation, "returns #{expectation.inspect}", &block)
+    def returns(expectation, description="returns #{expectation.inspect}", &block)
+      assert(:returns, expectation, description, &block)
     end
 
     def test(description = 'returns true', &block)
