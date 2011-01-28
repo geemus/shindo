@@ -4,7 +4,7 @@ require 'formatador'
 module Shindo
 
   unless const_defined?(:VERSION)
-    VERSION = '0.2.1'
+    VERSION = '0.2.2'
   end
 
   def self.tests(description = nil, tags = [], &block)
