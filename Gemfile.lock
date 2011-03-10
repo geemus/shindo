@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    shindo (0.2.0)
+    shindo (0.2.2)
       formatador (>= 0.0.16)
 
 GEM
@@ -13,5 +13,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  formatador (>= 0.0.16)
   shindo!

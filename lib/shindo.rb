@@ -3,6 +3,8 @@ require 'formatador'
 
 module Shindo
 
+  class Pending < StandardError; end
+
   unless const_defined?(:VERSION)
     VERSION = '0.2.2'
   end
@@ -45,10 +47,7 @@ module Shindo
     end
 
     def pending
-      catch(:pending) do
-        @pending = true
-      end
-      throw(:pending)
+      raise(Shindo::Pending.new)
     end
 
     def tests(description, tags = [], &block)
@@ -74,11 +73,11 @@ module Shindo
           begin
             display_description(description)
             Formatador.indent { instance_eval(&block) }
+          rescue Shindo::Pending
+            display_pending(description)
           rescue => error
             display_error(error)
           end
-        else
-          @description = description
         end
       else
         display_description("[light_black]#{description}[/]")
@@ -129,13 +128,15 @@ module Shindo
           for after in @afters.flatten.compact
             after.call
           end
+        rescue Shindo::Pending
+          @pending = true
         rescue => error
           success = false
           value = error
         end
         if @pending
-          display_pending(description)
           @pending = false
+          display_pending(description)
         elsif success
           display_success(description)
         else
