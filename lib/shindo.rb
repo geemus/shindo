@@ -118,6 +118,8 @@ module Shindo
           when :raises
             value = begin
               instance_eval(&block)
+            rescue Shindo::Pending
+              @pending = true
             rescue => error
               error
             end
