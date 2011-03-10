@@ -6,7 +6,7 @@ module Shindo
   class Pending < StandardError; end
 
   unless const_defined?(:VERSION)
-    VERSION = '0.3.0'
+    VERSION = '0.3.1'
   end
 
   def self.tests(description = nil, tags = [], &block)
