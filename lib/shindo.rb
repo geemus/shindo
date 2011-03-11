@@ -75,6 +75,9 @@ module Shindo
             Formatador.indent { instance_eval(&block) }
           rescue Shindo::Pending
             display_pending(description)
+            # HACK: remove indent since above doesn't
+            indent = Thread.current[:formatador].instance_variable_get(:@indent)
+            Thread.current[:formatador].instance_variable_set(:@indent, indent - 1)
           rescue => error
             display_error(error)
           end
