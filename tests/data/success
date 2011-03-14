@@ -1,3 +1,4 @@
 Shindo.tests do
   test('success') { true }
+  tests('inline tests').returns(false) { false }
 end

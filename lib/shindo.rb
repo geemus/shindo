@@ -81,6 +81,8 @@ module Shindo
           rescue => error
             display_error(error)
           end
+        else
+          display_description(description)
         end
       else
         display_description("[light_black]#{description}[/]")

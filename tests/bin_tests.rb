@@ -23,6 +23,8 @@ Shindo.tests('bin') do
   tests('success') do
     @output = bin(path('success'))
     includes('+ success')             { @output }
+    includes('inline tests')          { @output }
+    includes('+ returns false')        { @output }
     tests('$?.exitstatus').returns(0) { $?.exitstatus }
   end
 

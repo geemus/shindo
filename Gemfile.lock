@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    shindo (0.3.1)
+    shindo (0.3.2)
       formatador (>= 0.1.1)
 
 GEM
