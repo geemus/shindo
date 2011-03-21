@@ -59,6 +59,7 @@ module Shindo
       @afters.push([])
 
       @description = nil
+      @inline = false
       description ||= 'Shindo.tests'
       description = "[bold]#{description}[normal]"
       unless tags.empty?
@@ -72,16 +73,21 @@ module Shindo
         if block_given?
           begin
             display_description(description)
-            Formatador.indent { instance_eval(&block) }
+            # HACK: increase indent
+            indent = Thread.current[:formatador].instance_variable_get(:@indent)
+            Thread.current[:formatador].instance_variable_set(:@indent, indent + 1)
+            instance_eval(&block)
           rescue Shindo::Pending
             display_pending(description)
-            # HACK: remove indent since above doesn't
-            indent = Thread.current[:formatador].instance_variable_get(:@indent)
-            Thread.current[:formatador].instance_variable_set(:@indent, indent - 1)
           rescue => error
             display_error(error)
+          ensure
+            # HACK: decrease indent
+            indent = Thread.current[:formatador].instance_variable_get(:@indent)
+            Thread.current[:formatador].instance_variable_set(:@indent, indent - 1)
           end
         else
+          @inline = true
           display_description(description)
         end
       else
