@@ -53,7 +53,7 @@ module Shindo
     def tests(description, tags = [], &block)
       return self if Thread.main[:exit] || Thread.current[:reload]
 
-      tags = [*tags]
+      tags = [*tags].collect { |tag| tag.to_s }
       @tag_stack.push(tags)
       @befores.push([])
       @afters.push([])
