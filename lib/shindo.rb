@@ -33,6 +33,7 @@ module Shindo
           @unless_tagged << tag[1..-1]
         end
       end
+      @pending = nil
       Formatador.display_line
       tests(description, tags, &block)
     end
