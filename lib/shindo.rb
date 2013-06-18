@@ -131,7 +131,7 @@ module Shindo
               instance_eval(&block)
             rescue Shindo::Pending
               @pending = true
-            rescue => error
+            rescue Exception => error
               error
             end
             [value, value.is_a?(expectation)]
