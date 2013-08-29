@@ -2,7 +2,7 @@ def given_something
   raise 'ERROR!'
 end
 
-Shindo.tests('Fog::Rackspace::LoadBalancers | load_balancer_get_stats', ['rackspace']) do
+Shindo.tests('Shindo build errors', ['build_error']) do
   tests('another').returns(true) do
     true
   end
