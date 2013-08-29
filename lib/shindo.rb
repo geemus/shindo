@@ -81,6 +81,7 @@ module Shindo
             display_pending(description)
           rescue => error
             display_error(error)
+            abort "An error occurred outside of a test"
           ensure
             # HACK: decrease indent
             indent = Thread.current[:formatador].instance_variable_get(:@indent)

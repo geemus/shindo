@@ -8,6 +8,7 @@ module Shindo
       desc "Run shindo tests"
       task :tests do
         system 'shindo'
+        fail if $? != 0
       end
     end
 
