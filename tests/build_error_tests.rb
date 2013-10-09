@@ -7,10 +7,14 @@ Shindo.tests('Shindo build errors', ['build_error']) do
     true
   end
 
-  given_something do
-    tests('success').returns(true) do
-      true
+  begin
+    given_something do
+      tests('success').returns(true) do
+        false
+      end
     end
+  rescue
+    # an error occured above, but we intended it
   end
 end
 
