@@ -62,12 +62,7 @@ def run_in_thread(helpers, tests, thread_locals)
       end
     end
   }
-  begin
-    shindo.join
-  rescue
-    # continue, even if threads are gone
-    # see: https://github.com/geemus/shindo/issues/12
-  end
+  shindo.join
   if shindo[:reload]
     run_in_thread(helpers, tests, thread_locals)
   else
