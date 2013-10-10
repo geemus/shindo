@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
 @thread_locals = { :interactive => false }
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'taciturn'))
-require_relative File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'bin'))
+if defined?(:require_relative)
+  require_relative File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'bin'))
+else
+  require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo', 'bin'))
+end
