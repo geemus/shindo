@@ -3,18 +3,22 @@ def given_something
 end
 
 Shindo.tests('Shindo build errors', ['build_error']) do
-  tests('another').returns(true) do
+  tests('ok').returns(true) do
     true
   end
 
-  begin
+  tests('contained') do
     given_something do
       tests('success').returns(true) do
         false
       end
+      tests('never_reached').return(true) do
+        true
+      end
     end
-  rescue
-    # an error occured above, but we intended it
+  end
+
+  tests('fail').returns(true) do
+    false
   end
 end
-

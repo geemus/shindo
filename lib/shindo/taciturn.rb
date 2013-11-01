@@ -20,6 +20,7 @@ module Shindo
     end
 
     def display_error(error)
+      Thread.current[:totals][:errored] += 1
       Formatador.display_lines(['', Thread.current[:file]])
       display_description_stack
       Formatador.display_line("[red]#{error.message} (#{error.class})[/]")

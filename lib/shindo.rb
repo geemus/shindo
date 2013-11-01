@@ -22,7 +22,7 @@ module Shindo
       @tag_stack          = []
       Thread.current[:reload] = false
       Thread.current[:tags] ||= []
-      Thread.current[:totals] ||= { :failed => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
+      Thread.current[:totals] ||= { :failed => 0, :errored => 0, :pending => 0, :skipped => 0, :succeeded => 0 }
       @if_tagged = []
       @unless_tagged = []
       for tag in Thread.current[:tags]
@@ -81,7 +81,6 @@ module Shindo
             display_pending(description)
           rescue => error
             display_error(error)
-            abort "An error occurred outside of a test"
           ensure
             # HACK: decrease indent
             indent = Thread.current[:formatador].instance_variable_get(:@indent)
