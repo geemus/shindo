@@ -13,6 +13,7 @@ module Shindo
     end
 
     def display_error(error)
+      Thread.current[:totals][:errored] += 1
       Formatador.display_line("[red]#{error.message} (#{error.class})[/]")
       unless error.backtrace.empty?
         Formatador.indent do

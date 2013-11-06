@@ -28,4 +28,20 @@ Shindo.tests('bin') do
     tests('$?.exitstatus').returns(0) { $?.exitstatus }
   end
 
+  tests('error') do
+    @output = bin(path('error'))
+    includes('ok + returns true')             { @output }
+    includes('1 errored, 1 succeeded')        { @output }
+
+    tests('$?.exitstatus').returns(1) { $?.exitstatus }
+  end
+
+  tests('contained-error') do
+    @output = bin(path('contained-error'))
+    includes('ok + returns true')             { @output }
+    includes('1 failed, 1 errored, 1 succeeded')        { @output }
+
+    tests('$?.exitstatus').returns(1) { $?.exitstatus }
+  end
+
 end

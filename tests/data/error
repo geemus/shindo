@@ -1,0 +1,22 @@
+def given_something
+  raise 'ERROR!'
+end
+
+Shindo.tests('Shindo build errors', ['build_error']) do
+  tests('ok').returns(true) do
+    true
+  end
+
+  given_something do
+    tests('success').returns(true) do
+      false
+    end
+    tests('never_reached').return(true) do
+      true
+    end
+  end
+
+  tests('fail').returns(true) do
+    false
+  end
+end
