@@ -43,5 +43,4 @@ Shindo.tests('bin') do
 
     tests('$?.exitstatus').returns(1) { $?.exitstatus }
   end
-
 end

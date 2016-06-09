@@ -1,0 +1,4 @@
+Shindo.tests do
+  test('success') { true }
+  sleep(20)
+end

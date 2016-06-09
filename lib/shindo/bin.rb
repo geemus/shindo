@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'shindo')
 
-@interrupt = lambda do
+@interrupt = proc do
   unless Thread.main[:exit]
     Formatador.display_line('Gracefully Exiting... (ctrl-c to force)')
     Thread.main[:exit] = true
