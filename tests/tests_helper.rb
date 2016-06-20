@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'shindo'))
+require 'open3'
 
 BIN = File.join(File.dirname(__FILE__), '..', 'bin', 'shindo')
 
