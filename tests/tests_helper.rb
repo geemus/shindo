@@ -4,7 +4,7 @@ require 'open3'
 BIN = File.join(File.dirname(__FILE__), '..', 'bin', 'shindo')
 
 def bin(arguments)
-  `RUBYOPT="-rubygems" #{BIN} #{arguments}`
+  `RUBYOPT="-rrubygems" #{BIN} #{arguments}`
 end
 
 def path(name)
