@@ -20,7 +20,7 @@ if File.directory?('lib')
 end
 
 helpers = Dir.glob(File.join('tests', '**', '*helper.rb')).sort_by {|helper| helper.count(File::SEPARATOR)}
-tags = []
+tags, tests = [], nil
 for argument in ARGV
   if argument.match(/^[\+\-]/)
     tags << argument
