@@ -3,6 +3,7 @@ language: ruby
 matrix:
   allow_failures:
     - rvm: rbx
+    - rvm: truffleruby-head
 
 rvm:
   - 2.0.0
@@ -11,5 +12,6 @@ rvm:
   - jruby
   - rbx
   - ree
+  - truffleruby-head
 
 script: "bundle exec shindont"
