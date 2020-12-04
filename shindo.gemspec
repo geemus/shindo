@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'shindo'
-  s.version           = '0.3.8'
-  s.date              = '2013-11-06'
+  s.version           = '0.3.9'
+  s.date              = '2020-12-04'
   s.rubyforge_project = 'shindo'
 
   ## Make sure your summary is short. The description may be as long
@@ -67,7 +67,10 @@ Gem::Specification.new do |s|
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
   s.files = %w[
+    CONTRIBUTING.md
+    CONTRIBUTORS.md
     Gemfile
+    LICENSE.md
     README.rdoc
     Rakefile
     bin/shindo
@@ -87,6 +90,7 @@ Gem::Specification.new do |s|
     tests/data/negative
     tests/data/pending
     tests/data/positive
+    tests/data/sigint
     tests/data/success
     tests/tag_tests.rb
     tests/tests_helper.rb
