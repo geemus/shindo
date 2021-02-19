@@ -74,11 +74,11 @@ run_in_thread(helpers, tests, @thread_locals.merge({:tags => tags}))
 @totals   ||= { :failed => 0, :errored => 0, :pending => 0, :succeeded => 0 }
 @success  = @totals[:failed] + @totals[:errored] == 0
 status = []
-status << "[red]#{@totals[:failed]} failed[/]," if @totals[:failed] > 0
-status << "[red]#{@totals[:errored]} errored[/]," if @totals[:errored] > 0
-status << "[yellow]#{@totals[:pending]} pending[/]," if @totals[:pending] > 0
+status << "[red]#{@totals[:failed]} failed[/]" if @totals[:failed] > 0
+status << "[red]#{@totals[:errored]} errored[/]" if @totals[:errored] > 0
+status << "[yellow]#{@totals[:pending]} pending[/]" if @totals[:pending] > 0
 status << "[green]#{@totals[:succeeded]} succeeded[/]"
-status = status[0...-2].join(', ') << ' and ' << status[-1] if status.length > 3
+status = [status[0...-1].join(', '), 'and', status[-1]] if status.length >= 2
 status << "in [bold]#{Time.now - @started_at}[/] seconds"
 Formatador.display_lines(['', status.join(' '), ''])
 
