@@ -45,7 +45,7 @@ end
 
 require File.join(File.dirname(__FILE__), 'lib', 'shindo', 'rake')
 Shindo::Rake.new
-task :default => :shindo_tests
+task :default => :tests
 
 desc "Generate RCov test coverage and open in your browser"
 task :coverage do
@@ -139,13 +139,4 @@ task :validate do
     puts "A `VERSION` file at root level violates Gem best practices."
     exit!
   end
-end
-
-task :shindo_tests do
-  system "shindo -build_error"
-  fail "Tests excluding build error should pass" unless $? == 0
-
-  puts "2"
-  system "shindo +build_error"
-  fail "The build_error test should fail" unless $? != 0
 end
