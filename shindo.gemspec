@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.name              = 'shindo'
   s.version           = '0.3.10'
   s.date              = '2021-03-01'
-  s.rubyforge_project = 'shindo'
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
@@ -39,7 +38,6 @@ Gem::Specification.new do |s|
 
   ## If your gem includes any executables, list them here.
   s.executables = ['shindo', 'shindont']
-  s.default_executable = 'shindo'
 
   ## Specify any RDoc options here. You'll want to add your README and
   ## LICENSE files to the extra_rdoc_files list.
