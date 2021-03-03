@@ -27,31 +27,28 @@ For one off simple tests like this you can also chain the calls like this:
 
 You can also override the default descriptions:
 
-  Shindo.tests('foo/bar') do
-    returns('foo', 'returns foo when bar') { 'foo' }
-    raises(StandardError, 'raises StandardError when baz') { raise StandardError }
+  Shindo.tests('example/bar') do
+    returns('default description', 'overriding description: non-default description') { 'default description' }
+    raises(StandardError, 'overriding description: raises when true') { raise StandardError if true }
   end
 
 Or nest things inside tests blocks:
   Shindo.tests do
-    tests('returns') do
-      returns('foo', 'returns foo when bar') { 'foo' }
-      returns('bar', 'returns bar when baz') { 'bar' }
-    end
-    tests('raises') do
-      raises(StandardError, 'raises StandardError when baz') { raise StandardError }
-      raises(StandardError, 'raises StandardError when qux') { raise StandardError }
+    tests('examples') do
+      returns(true, 'returns true description') { true }
+      returns(false, 'returns false description') { false }
+      raises(StandardError, 'raises StandardError description') { raise StandardError }
     end
   end
 
-Then, if you want to get real fancy you can also tag your tests, to help narrow down which ones to run
+Then, if you want to get extra fancy you can tag  tests, to help narrow down which ones to run
 
-  Shindo.tests('tests for foo', 'foo') do
-    test('foo') { true }
+  Shindo.tests('tests for true', 'true') do
+    test(true) { true }
   end
 
-  Shindo.tests('tests for bar', 'bar') do
-    test('bar') { true }
+  Shindo.tests('tests for false', 'false') do
+    test(false) { false }
   end
 
 Note: you'll have to supply a non-default description first, and then follow up with tags.
@@ -61,11 +58,11 @@ Note: you'll have to supply a non-default description first, and then follow up 
 Tests get evaluated in the file just like you see it so you can add setup and teardown easily:
 
   Shindo.tests do
-    foo = 'bar' # setup
-    tests('foo').returns('bar') { foo }
+    bool = true # setup
+    tests('bool').returns(true) { bool }
 
-    foo = 'baz' # cleanup after last
-    tests('foo').returns('baz') { foo }
+    bool = false # cleanup after last
+    tests('bool').returns(false) { bool }
 
     foo = nil # teardown
   end
@@ -94,17 +91,17 @@ You can also give directories and it will run all files ending in _tests.rb and 
 
   shindo some_test_directory
 
-That leaves tags, which use +/-.  So run just tests with the 'foo' tag:
+That leaves tags, which use +/-.  So run just tests with the 'true' tag:
 
-  shindo some_test_directory +foo
+  shindo some_test_directory +true
 
-Or those without the 'bar' tag:
+Or those without the 'false' tag:
 
-  shindo some_test_directory -bar
+  shindo some_test_directory -false
 
-Or combine to run everything with a foo tag, but no bar tag
+Or combine to run everything with a 'true' tag, but no 'false' tag
 
-  shindo some_test_directory +foo -bar
+  shindo some_test_directory +true -false
 
 If you are running in a non-interactive mode, or one where speed matters (i.e. continuous integration), you can run shindo with (n)o (t)race and much quieter output. It takes all the same arguments, but uses the shindont bin file.
 
@@ -118,7 +115,7 @@ When tests fail you'll get lots of options to help you debug the problem, just e
 
 (The MIT License)
 
-Copyright (c) 2009 {geemus (Wesley Beary)}[http://github.com/geemus]
+Copyright (c) 2021 {geemus (Wesley Beary)}[http://github.com/geemus]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
