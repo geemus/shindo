@@ -7,7 +7,7 @@ module Shindo
     def initialize
       desc "Run shindo tests"
       task :tests do
-        system 'shindo'
+        ruby '-S', 'shindo'
         fail if $? != 0
       end
     end
