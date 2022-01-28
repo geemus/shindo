@@ -29,7 +29,7 @@ for argument in ARGV
     if File.directory?(path)
       tests ||= []
       tests |= Dir.glob(File.join(path, '**', '*tests.rb'))
-    elsif File.exists?(path)
+    elsif File.exist?(path)
       tests ||= []
       tests << path
     else
