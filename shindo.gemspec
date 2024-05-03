@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'shindo'
   s.version           = '0.3.11'
-  s.date              = '2023-05-03'
+  s.date              = '2024-05-03'
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
